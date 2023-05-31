@@ -1,0 +1,17 @@
+name: CI workflow on push
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
+jobs:
+  lint-report:
+    uses: ./.github/workflows/lint-report.yaml
+
+  static-analysis:
+    uses: ./.github/workflows/static-analysis.yaml
+
+  integration-test:
+    uses: ./.github/workflows/integration-test.yaml
