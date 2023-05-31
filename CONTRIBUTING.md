@@ -5,8 +5,8 @@ To make contributions to this charm, you'll need a working [Juju development set
 You can use the environments created by `tox` for development:
 
 ```shell
-tox --notest -e unit
-source .tox/unit/bin/activate
+tox --notest -e integration
+source .tox/integration/bin/activate
 ```
 
 ## Testing
@@ -18,6 +18,5 @@ that can be used for linting and formatting code when you're preparing contribut
 tox -e fmt           # Format code
 tox -e lint          # Code style
 tox -e static        # Static analysis
-tox -e unit          # Unit tests
 tox -e integration   # Integration tests
 ```
