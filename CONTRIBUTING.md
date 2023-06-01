@@ -12,7 +12,7 @@ source .tox/integration/bin/activate
 ## Testing
 
 This project uses `tox` for managing test environments. There are some pre-configured environments
-that can be used for linting and formatting code when you're preparing contributions to the charm:
+that can be used for linting and formatting code when you're preparing contributions to the project:
 
 ```shell
 tox -e fmt           # Format code
