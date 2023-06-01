@@ -1,0 +1,10 @@
+name: CI workflow on schedule
+
+on:
+  schedule:
+    - cron:  '0 2 * * *'
+
+jobs:
+
+  integration-test:
+    uses: ./.github/workflows/integration-test.yaml
