@@ -5,12 +5,7 @@
 import logging
 
 import pytest
-from fixtures import (
-    deploy_cos,
-    deploy_sdcore,
-    configure_sdcore,
-    deploy_gnbsim,
-)
+from fixtures import configure_sdcore, deploy_cos, deploy_gnbsim, deploy_sdcore
 from pytest_operator.plugin import OpsTest
 
 logger = logging.getLogger(__name__)
@@ -29,7 +24,7 @@ class TestSDCoreBundle:
         )
 
     @pytest.mark.abort_on_fail
-    async def test_given_sdcore_bundle_and_cos_lite_bundle_when_deployed_and_related_then(  # noqa: E501
+    async def test_given_sdcore_bundle_and_cos_lite_bundle_when_deployed_and_related_then(
         self, ops_test: OpsTest, deploy_gnbsim
     ):
         gnbsim_unit = ops_test.model.units["gnbsim/0"]  # type: ignore[union-attr]
