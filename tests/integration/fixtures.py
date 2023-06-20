@@ -23,37 +23,32 @@ JINJA_ENV = Environment(loader=FileSystemLoader("tests/integration/resources"))
 @pytest.fixture(scope="module")
 @pytest.mark.abort_on_fail
 async def deploy_cos(ops_test: OpsTest):
+    """Deploys observability model.
+
+    COS model includes:
+    - cos-lite bundle
+    - cos-configuration-k8s charm providing custom Charmed SD-Core dashboard
+
+    Args:
+        ops_test: OpsTest
+    """
     await deploy_cos_lite(ops_test)
     await deploy_cos_configuration(ops_test)
 
 
 @pytest.fixture(scope="module")
 @pytest.mark.abort_on_fail
-async def deploy_sdcore(ops_test: OpsTest, deploy_cos):
-    """Deploys `sdcore` bundle."""
-    await deploy_sdcore_router(ops_test)
-    await ops_test.model.deploy(  # type: ignore[union-attr]
-        entity_url="https://charmhub.io/sdcore",
-        channel="latest/edge",
-        trust=True,
-    )
+async def configure_sdcore(ops_test: OpsTest):
+    """Configures Charmed SD-Core.
 
-    run_args_consume = [
-        "juju",
-        "consume",
-        "cos-lite.prometheus",
-    ]
-    retcode, stdout, stderr = await ops_test.run(*run_args_consume)
-    if retcode != 0:
-        raise RuntimeError(f"Error: {stderr}")
-    await ops_test.model.add_relation(  # type: ignore[union-attr]
-        "prometheus:receive-remote-write", "grafana-agent-k8s:send-remote-write"
-    )
+    Configuration includes:
+    - subscriber creation
+    - device group creation
+    - network slice creation
 
-
-@pytest.fixture(scope="module")
-@pytest.mark.abort_on_fail
-async def configure_sdcore(ops_test: OpsTest, deploy_sdcore):
+    Args:
+        ops_test: OpsTest
+    """
     webui_ip_address = await get_unit_address(ops_test, "webui", 0)
     create_subscriber_resp = _create_subscriber(webui_ip_address)
     assert create_subscriber_resp.status_code == 201
@@ -65,14 +60,19 @@ async def configure_sdcore(ops_test: OpsTest, deploy_sdcore):
 
 @pytest.fixture(scope="module")
 @pytest.mark.abort_on_fail
-async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
+async def deploy_gnbsim(ops_test: OpsTest):
+    """Deploys `sdcore-gnbsim`.
+
+    Args:
+        ops_test: OpsTest
+    """
     await ops_test.model.deploy(  # type: ignore[union-attr]
         "sdcore-gnbsim",
         application_name="gnbsim",
         channel="latest/edge",
         trust=True,
     )
-    await ops_test.model.add_relation("gnbsim:fiveg-n2", "amf:fiveg-n2")
+    await ops_test.model.add_relation("gnbsim:fiveg-n2", "amf:fiveg-n2")  # type: ignore[union-attr]  # noqa: E501
     await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
         apps=["gnbsim"],
         raise_on_error=False,
@@ -82,6 +82,11 @@ async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
 
 
 async def deploy_cos_lite(ops_test: OpsTest):
+    """Deploys `cos-lite` bundle.
+
+    Args:
+        ops_test: OpsTest
+    """
     await ops_test.track_model(
         alias=COS_MODEL_NAME,
         model_name=COS_MODEL_NAME,
@@ -107,6 +112,11 @@ async def deploy_cos_lite(ops_test: OpsTest):
 
 
 async def deploy_cos_configuration(ops_test: OpsTest):
+    """Deploys `cos-configuration-k8s` charm.
+
+    Args:
+        ops_test: OpsTest
+    """
     with ops_test.model_context(COS_MODEL_NAME):
         await ops_test.model.deploy(  # type: ignore[union-attr]
             "cos-configuration-k8s",
@@ -117,7 +127,7 @@ async def deploy_cos_configuration(ops_test: OpsTest):
                 "grafana_dashboards_path": "grafana_dashboards/sdcore/",
             },
         )
-        await ops_test.model.add_relation("cos-configuration-k8s", "grafana")
+        await ops_test.model.add_relation("cos-configuration-k8s", "grafana")  # type: ignore[union-attr]  # noqa: E501
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
             apps=["cos-configuration-k8s"],
             raise_on_error=False,
@@ -126,21 +136,15 @@ async def deploy_cos_configuration(ops_test: OpsTest):
         )
 
 
-async def deploy_sdcore_router(ops_test: OpsTest):
-    await ops_test.model.deploy(  # type: ignore[union-attr]
-        "sdcore-router",
-        channel="latest/edge",
-        trust=True,
-    )
-    await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
-        apps=["sdcore-router"],
-        raise_on_error=False,
-        status="active",
-        timeout=300,
-    )
-
-
 def _create_subscriber(webui_ip: str) -> requests.Response:
+    """Creates a subscriber from a template.
+
+    Args:
+        webui_ip: IP address of the `webui` application unit
+
+    Returns:
+        requests.Response: requests.Response Object
+    """
     template = JINJA_ENV.get_template("subscriber.json.j2")
     subscriber_data = template.render(imsi=TEST_IMSI)
     url = f"http://{webui_ip}:5000/api/subscriber/imsi-{TEST_IMSI}"
@@ -148,6 +152,14 @@ def _create_subscriber(webui_ip: str) -> requests.Response:
 
 
 def _create_device_group(webui_ip: str) -> requests.Response:
+    """Creates a device group from a template.
+
+    Args:
+        webui_ip: IP address of the `webui` application unit
+
+    Returns:
+        requests.Response: requests.Response Object
+    """
     template = JINJA_ENV.get_template("device-group.json.j2")
     device_group_json = json.loads(template.render(imsi=TEST_IMSI))
     url = f"http://{webui_ip}:5000/config/v1/device-group/{TEST_DEVICE_GROUP_NAME}"
@@ -155,6 +167,14 @@ def _create_device_group(webui_ip: str) -> requests.Response:
 
 
 def _create_network_slice(webui_ip: str) -> requests.Response:
+    """Creates a network slice from a template.
+
+    Args:
+        webui_ip: IP address of the `webui` application unit
+
+    Returns:
+        requests.Response: requests.Response Object
+    """
     template = JINJA_ENV.get_template("network-slice.json.j2")
     network_slice_json = json.loads(template.render(device_group_name=TEST_DEVICE_GROUP_NAME))
     url = f"http://{webui_ip}:5000/config/v1/network-slice/{TEST_NETWORK_SLICE_NAME}"
@@ -165,7 +185,7 @@ async def get_unit_address(ops_test: OpsTest, app_name: str, unit_num: int) -> s
     """Get unit's IP address for any application.
 
     Args:
-        ops_test: pytest-operator plugin
+        ops_test: OpsTest
         app_name: string name of application
         unit_num: integer number of a juju unit
 
