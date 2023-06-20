@@ -5,7 +5,7 @@
 import logging
 
 import pytest
-from fixtures import configure_sdcore, deploy_cos, deploy_gnbsim, deploy_sdcore
+from fixtures import deploy_cos, deploy_gnbsim
 from pytest_operator.plugin import OpsTest
 
 logger = logging.getLogger(__name__)
@@ -13,9 +13,10 @@ logger = logging.getLogger(__name__)
 
 class TestSDCoreBundle:
     @pytest.mark.abort_on_fail
-    async def test_given_sdcore_bundle_and_cos_lite_bundle_when_deployed_and_related_then_status_is_active(  # noqa: E501
-        self, ops_test: OpsTest, deploy_sdcore
+    async def test_given_cos_lite_bundle_deployed_when_deploy_sdcore_then_status_is_active(
+        self, ops_test: OpsTest, deploy_cos
     ):
+        await self._deploy_sdcore(ops_test)
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
             apps=[*ops_test.model.applications],  # type: ignore[union-attr]
             raise_on_error=False,
@@ -24,7 +25,7 @@ class TestSDCoreBundle:
         )
 
     @pytest.mark.abort_on_fail
-    async def test_given_sdcore_bundle_and_cos_lite_bundle_when_deployed_and_related_then(
+    async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
         self, ops_test: OpsTest, deploy_gnbsim
     ):
         gnbsim_unit = ops_test.model.units["gnbsim/0"]  # type: ignore[union-attr]
@@ -33,3 +34,47 @@ class TestSDCoreBundle:
             action_uuid=start_simulation.entity_id, wait=240
         )
         assert action_output["success"] == "true"
+
+    async def _deploy_sdcore(self, ops_test: OpsTest):
+        """Deploys `sdcore` bundle.
+
+        Args:
+            ops_test: OpsTest
+        """
+        await self._deploy_sdcore_router(ops_test)
+        await ops_test.model.deploy(  # type: ignore[union-attr]
+            entity_url="https://charmhub.io/sdcore",
+            channel="latest/edge",
+            trust=True,
+        )
+
+        run_args_consume = [
+            "juju",
+            "consume",
+            "cos-lite.prometheus",
+        ]
+        retcode, stdout, stderr = await ops_test.run(*run_args_consume)
+        if retcode != 0:
+            raise RuntimeError(f"Error: {stderr}")
+        await ops_test.model.add_relation(  # type: ignore[union-attr]
+            "prometheus:receive-remote-write", "grafana-agent-k8s:send-remote-write"
+        )
+
+    @staticmethod
+    async def _deploy_sdcore_router(ops_test: OpsTest):
+        """Deploys `sdcore-router`.
+
+        Args:
+            ops_test: OpsTest
+        """
+        await ops_test.model.deploy(  # type: ignore[union-attr]
+            "sdcore-router",
+            channel="latest/edge",
+            trust=True,
+        )
+        await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
+            apps=["sdcore-router"],
+            raise_on_error=False,
+            status="active",
+            timeout=300,
+        )
