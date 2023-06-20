@@ -9,17 +9,62 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup LXD
-        uses: canonical/setup-lxd@main
-        with:
-          channel: 5.13/stable
       - name: Setup operator environment
-        uses: charmed-kubernetes/actions-operator@main
-        with:
-          juju-channel: 3.1/stable
-          provider: microk8s
-          channel: 1.27-strict/stable
-          microk8s-addons: "hostpath-storage dns metallb:10.1.1.1-10.1.1.254"
+        run: |
+          echo "# Initialize LXD"
+          /usr/bin/sudo lxd init --auto
+
+          echo "# Configure LXD"
+          /usr/bin/sudo lxc --project charmcraft project create local:charmcraft || true
+          /usr/bin/sudo lxc --project charmcraft profile device add default root disk path=/ pool=default type=disk || true
+          /usr/bin/sudo lxc --project charmcraft profile device add default eth0 nic name=eth0 network=lxdbr0 || true
+          /usr/bin/sudo lxc --project charmcraft profile set default environment.http_proxy http://squid.internal:3128/
+          /usr/bin/sudo lxc --project charmcraft profile set default environment.https_proxy http://squid.internal:3128/
+          /usr/bin/sudo lxc --project charmcraft profile set default environment.HTTP_PROXY http://squid.internal:3128/
+          /usr/bin/sudo lxc --project charmcraft profile set default environment.HTTPS_PROXY http://squid.internal:3128/
+
+          echo "# Install tox"
+          /usr/bin/sudo apt update -yqq
+          /usr/bin/sudo apt install -yqq python3-pip
+          /usr/bin/sudo --preserve-env=http_proxy,https_proxy,no_proxy pip3 install tox
+
+          echo "# Install Juju"
+          if ! command -v juju &> /dev/null; then
+            /usr/bin/sudo snap install juju --channel=3.1/stable
+          else
+            /usr/bin/sudo snap refresh juju --channel=3.1/stable
+          fi
+
+          echo "# Install juju-crashdump"
+          if ! command -v juju-crashdump &> /dev/null; then
+            /usr/bin/sudo snap install juju-crashdump --classic --channel=latest
+          else
+            /usr/bin/sudo snap refresh juju-crashdump --classic --channel=latest
+          fi
+
+          echo "# Install charmcraft"
+          /usr/bin/sudo snap install charmcraft --classic --channel=$CHARMCRAFT_VERSION
+
+          echo "# Install microk8s"
+          if ! command -v microk8s &> /dev/null; then
+            /usr/bin/sudo snap install microk8s --channel=1.27-strict/stable
+          else
+            /usr/bin/sudo snap refresh microk8s --channel=1.27-strict/stable
+          fi
+
+          echo "# Initialize microk8s"
+          /usr/bin/bash -c "sudo usermod -a -G snap_microk8s $USER"
+          /usr/bin/sg snap_microk8s -c "microk8s status --wait-ready"
+          /usr/bin/sg snap_microk8s -c "sudo microk8s enable hostpath-storage"
+          /usr/bin/sg snap_microk8s -c "sudo microk8s enable rbac"
+          /usr/bin/sg snap_microk8s -c "sudo microk8s enable dns:10.130.64.38,10.130.64.39"
+          /usr/bin/sg snap_microk8s -c "sudo microk8s disable metallb"
+          /usr/bin/sg snap_microk8s -c "sudo microk8s enable metallb:10.1.1.1-10.1.1.254"
+
+          echo "# Bootstrap controller"
+          sleep 60  # Microk8s needs time to initialize properly
+          /usr/bin/sg snap_microk8s -c "mkdir -p /home/ubuntu/.local/share"
+          /usr/bin/sg snap_microk8s -c "juju bootstrap --debug --verbose microk8s integration-tests-$GITHUB_RUN_ID --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG'  --bootstrap-constraints=''"
       - name: Enable Multus addon
         continue-on-error: true
         run: |
