@@ -5,7 +5,7 @@ on:
 
 jobs:
   integration-test:
-    runs-on: self-hosted
+    runs-on: sd-core-runner
     steps:
       - name: Checkout
         uses: actions/checkout@v3
