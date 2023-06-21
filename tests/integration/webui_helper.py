@@ -14,7 +14,7 @@ SUBSCRIBER_JSON = {
     "plmnId": "20801",
     "opc": "981d464c7c52eb6e5036234984ad0bcf",
     "key": "5122250214c33e723a5dd523fc145fc0",
-    "sequenceNumber": "16f3b3f70fc2"
+    "sequenceNumber": "16f3b3f70fc2",
 }
 DEVICE_GROUP_JSON = {
     "imsis": [],
@@ -28,39 +28,19 @@ DEVICE_GROUP_JSON = {
         "ue-dnn-qos": {
             "dnn-mbr-uplink": 200000000,
             "dnn-mbr-downlink": 200000000,
-            "traffic-class": {
-                "name": "platinum",
-                "arp": 6,
-                "pdb": 300,
-                "pelr": 6,
-                "qci": 8
-            }
-        }
-    }
+            "traffic-class": {"name": "platinum", "arp": 6, "pdb": 300, "pelr": 6, "qci": 8},
+        },
+    },
 }
 NETWORK_SLICE_JSON = {
-    "slice-id": {
-        "sst": "1",
-        "sd": "010203"
-    },
+    "slice-id": {"sst": "1", "sd": "010203"},
     "site-device-group": [],
     "site-info": {
         "site-name": "demo",
-        "plmn": {
-            "mcc": "208",
-            "mnc": "93"
-        },
-        "gNodeBs": [
-            {
-                "name": "demo-gnb1",
-                "tac": 1
-            }
-        ],
-        "upf": {
-            "upf-name": "upf",
-            "upf-port": "8805"
-        }
-    }
+        "plmn": {"mcc": "208", "mnc": "93"},
+        "gNodeBs": [{"name": "demo-gnb1", "tac": 1}],
+        "upf": {"upf-name": "upf", "upf-port": "8805"},
+    },
 }
 
 
