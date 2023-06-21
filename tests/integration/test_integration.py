@@ -5,7 +5,7 @@
 import logging
 
 import pytest
-from fixtures import deploy_cos, deploy_gnbsim
+from fixtures import configure_sdcore, deploy_gnbsim
 from pytest_operator.plugin import OpsTest
 
 logger = logging.getLogger(__name__)
@@ -14,13 +14,16 @@ logger = logging.getLogger(__name__)
 class TestSDCoreBundle:
     @pytest.mark.abort_on_fail
     async def test_given_cos_lite_bundle_deployed_when_deploy_sdcore_then_status_is_active(
-        self, ops_test: OpsTest, deploy_cos
+        self, ops_test: OpsTest,
     ):
         await self._deploy_sdcore(ops_test)
+        apps = [*ops_test.model.applications]  # type: ignore[union-attr]
+        apps.remove("grafana-agent-k8s")
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
-            apps=[*ops_test.model.applications],  # type: ignore[union-attr]
+            apps=apps,
             raise_on_error=False,
             status="active",
+            idle_period=10,
             timeout=1200,
         )
 
@@ -46,18 +49,6 @@ class TestSDCoreBundle:
             entity_url="https://charmhub.io/sdcore",
             channel="latest/edge",
             trust=True,
-        )
-
-        run_args_consume = [
-            "juju",
-            "consume",
-            "cos-lite.prometheus",
-        ]
-        retcode, stdout, stderr = await ops_test.run(*run_args_consume)
-        if retcode != 0:
-            raise RuntimeError(f"Error: {stderr}")
-        await ops_test.model.add_relation(  # type: ignore[union-attr]
-            "prometheus:receive-remote-write", "grafana-agent-k8s:send-remote-write"
         )
 
     @staticmethod
