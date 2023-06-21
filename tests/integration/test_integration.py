@@ -36,6 +36,9 @@ class TestSDCoreBundle:
         action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
             action_uuid=start_simulation.entity_id, wait=240
         )
+        logger.warning("========================================================================")
+        logger.warning(action_output)
+        logger.warning("========================================================================")
         assert action_output["success"] == "true"
 
     async def _deploy_sdcore(self, ops_test: OpsTest):
