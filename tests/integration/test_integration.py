@@ -38,6 +38,9 @@ class TestSDCoreBundle:
         )
         logger.warning("========================================================================")
         logger.warning(action_output)
+        logger.warning("Zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
+        import time
+        time.sleep(600)
         logger.warning("========================================================================")
         assert action_output["success"] == "true"
 
