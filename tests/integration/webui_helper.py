@@ -9,14 +9,14 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-SUBSCRIBER_JSON = {
+SUBSCRIBER_CONFIG = {
     "UeId": "PLACEHOLDER",
     "plmnId": "20801",
     "opc": "981d464c7c52eb6e5036234984ad0bcf",
     "key": "5122250214c33e723a5dd523fc145fc0",
     "sequenceNumber": "16f3b3f70fc2",
 }
-DEVICE_GROUP_JSON = {
+DEVICE_GROUP_CONFIG = {
     "imsis": [],
     "site-info": "demo",
     "ip-domain-name": "pool1",
@@ -32,7 +32,7 @@ DEVICE_GROUP_JSON = {
         },
     },
 }
-NETWORK_SLICE_JSON = {
+NETWORK_SLICE_CONFIG = {
     "slice-id": {"sst": "1", "sd": "010203"},
     "site-device-group": [],
     "site-info": {
@@ -59,9 +59,9 @@ class WebUI:
         Args:
             imsi (str): Subscriber's IMSI
         """
-        SUBSCRIBER_JSON["UeId"] = imsi
+        SUBSCRIBER_CONFIG["UeId"] = imsi
         url = f"http://{self.webui_ip}:5000/api/subscriber/imsi-{imsi}"
-        response = requests.post(url=url, data=json.dumps(SUBSCRIBER_JSON))
+        response = requests.post(url=url, data=json.dumps(SUBSCRIBER_CONFIG))
         response.raise_for_status()
 
     def create_device_group(self, device_group_name: str, imsis: list) -> None:
@@ -71,9 +71,9 @@ class WebUI:
             device_group_name (str): Device group name
             imsis (list): List of IMSIS to be included in the device group
         """
-        DEVICE_GROUP_JSON["imsis"] = imsis
+        DEVICE_GROUP_CONFIG["imsis"] = imsis
         url = f"http://{self.webui_ip}:5000/config/v1/device-group/{device_group_name}"
-        response = requests.post(url, json=DEVICE_GROUP_JSON)
+        response = requests.post(url, json=DEVICE_GROUP_CONFIG)
         response.raise_for_status()
 
     def create_network_slice(self, network_slice_name: str, device_groups: list) -> None:
@@ -83,7 +83,7 @@ class WebUI:
             network_slice_name (str): Network slice name
             device_groups (list): List of device groups to be included in the network slice
         """
-        NETWORK_SLICE_JSON["site-device-group"] = device_groups
+        NETWORK_SLICE_CONFIG["site-device-group"] = device_groups
         url = f"http://{self.webui_ip}:5000/config/v1/network-slice/{network_slice_name}"
-        response = requests.post(url, json=NETWORK_SLICE_JSON)
+        response = requests.post(url, json=NETWORK_SLICE_CONFIG)
         response.raise_for_status()

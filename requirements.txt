@@ -2,10 +2,7 @@ black
 flake8-docstrings
 flake8-builtins
 isort
-Jinja2
 juju
-lightkube
-lightkube-models
 mypy
 pep8-naming
 pyproject-flake8

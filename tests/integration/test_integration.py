@@ -23,7 +23,7 @@ class TestSDCoreBundle:
             apps=apps,
             raise_on_error=False,
             status="active",
-            idle_period=10,
+            idle_period=30,
             timeout=1200,
         )
 
@@ -36,12 +36,6 @@ class TestSDCoreBundle:
         action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
             action_uuid=start_simulation.entity_id, wait=240
         )
-        logger.warning("========================================================================")
-        logger.warning(action_output)
-        logger.warning("Zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
-        import time
-        time.sleep(600)
-        logger.warning("========================================================================")
         assert action_output["success"] == "true"
 
     async def _deploy_sdcore(self, ops_test: OpsTest):
@@ -66,12 +60,14 @@ class TestSDCoreBundle:
         """
         await ops_test.model.deploy(  # type: ignore[union-attr]
             "sdcore-router",
+            application_name="router",
             channel="latest/edge",
             trust=True,
         )
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
-            apps=["sdcore-router"],
+            apps=["router"],
             raise_on_error=False,
             status="active",
+            idle_period=30,
             timeout=300,
         )
