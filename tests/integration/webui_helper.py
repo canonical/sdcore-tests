@@ -71,14 +71,21 @@ class WebUI:
 
         Args:
             device_group_name (str): Device group name
-            imsis (list): List of IMSIS to be included in the device group
+            imsis (list): List of IMSIs to be included in the device group
         """
         DEVICE_GROUP_CONFIG["imsis"] = imsis
         url = f"http://{self.webui_ip}:5000/config/v1/device-group/{device_group_name}"
         response = requests.post(url, json=DEVICE_GROUP_CONFIG)
         response.raise_for_status()
-        time.sleep(1)
-        logger.info(f"Created device group {device_group_name}.")
+        now = time.time()
+        timeout = 5
+        while time.time() - now <= timeout:
+            if requests.get(url).json():
+                logger.info(f"Created device group {device_group_name}.")
+                return
+            else:
+                time.sleep(1)
+        raise TimeoutError("Timed out creating device group.")
 
     def create_network_slice(self, network_slice_name: str, device_groups: list) -> None:
         """Creates a network slice.
@@ -91,5 +98,12 @@ class WebUI:
         url = f"http://{self.webui_ip}:5000/config/v1/network-slice/{network_slice_name}"
         response = requests.post(url, json=NETWORK_SLICE_CONFIG)
         response.raise_for_status()
-        time.sleep(1)
-        logger.info(f"Created network slice {network_slice_name}.")
+        now = time.time()
+        timeout = 5
+        while time.time() - now <= timeout:
+            if requests.get(url).json():
+                logger.info(f"Created network slice {network_slice_name}.")
+                return
+            else:
+                time.sleep(1)
+        raise TimeoutError("Timed out creating network slice.")
