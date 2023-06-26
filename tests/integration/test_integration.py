@@ -21,7 +21,7 @@ class TestSDCoreBundle:
             apps=apps,
             raise_on_error=False,
             status="active",
-            idle_period=30,
+            idle_period=10,
             timeout=1200,
         )
 
@@ -66,6 +66,6 @@ class TestSDCoreBundle:
             apps=["router"],
             raise_on_error=False,
             status="active",
-            idle_period=30,
+            idle_period=10,
             timeout=300,
         )
