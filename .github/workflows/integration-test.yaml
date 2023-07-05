@@ -49,7 +49,7 @@ jobs:
               } 
             ]
 
-  integration-test:
+  integration-tests:
     name: Integration tests
     needs: start-runner
     runs-on: ${{ needs.start-runner.outputs.label }}
