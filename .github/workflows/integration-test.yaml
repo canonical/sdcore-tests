@@ -56,7 +56,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup LXD
+      - name: Setup operator environment
         run: |
           sudo snap refresh lxd --channel=5.13/stable
           echo "# Initialize LXD"
@@ -66,13 +66,31 @@ jobs:
           lxc --project charmcraft project create local:charmcraft || true
           lxc --project charmcraft profile device add default root disk path=/ pool=default type=disk || true
           lxc --project charmcraft profile device add default eth0 nic name=eth0 network=lxdbr0 || true
-      - name: Setup operator environment
-        uses: charmed-kubernetes/actions-operator@main
-        with:
-          juju-channel: 3.1/stable
-          provider: microk8s
-          channel: 1.27-strict/stable
-          microk8s-addons: "hostpath-storage dns metallb:10.1.1.1-10.1.1.254"
+          
+          echo "# Install tox"
+          apt update -yqq
+          apt install -yqq python3-pip
+          pip3 install tox
+
+          echo "# Install Juju"
+          snap install juju --channel=3.1/stable
+
+          echo "# Install charmcraft"
+          snap install charmcraft --classic
+
+          echo "# Install microk8s"
+          snap install microk8s --channel=1.27-strict/stable
+
+          echo "# Initialize microk8s"
+          sudo usermod -a -G snap_microk8s ubuntu
+          microk8s status --wait-ready
+          microk8s enable hostpath-storage dns metallb:10.1.1.1-10.1.1.254
+          microk8s enable dns 
+          microk8s enable metallb:10.1.1.1-10.1.1.254
+
+          echo "# Bootstrap controller"
+          su ubuntu -c "mkdir -p /home/ubuntu/.local/share"
+          su ubuntu -c "juju bootstrap --debug --verbose microk8s integration-tests --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG'"
       - name: Enable Multus addon
         continue-on-error: true
         run: |
