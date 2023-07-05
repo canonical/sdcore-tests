@@ -57,9 +57,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup LXD
-        uses: canonical/setup-lxd@main
-        with:
-          channel: 5.13/stable
+        run: |
+          sudo snap refresh lxd --channel=5.13/stable
+          echo "# Initialize LXD"
+          lxd init --auto
+          
+          echo "# Configure LXD"
+          lxc --project charmcraft project create local:charmcraft || true
+          lxc --project charmcraft profile device add default root disk path=/ pool=default type=disk || true
+          lxc --project charmcraft profile device add default eth0 nic name=eth0 network=lxdbr0 || true
       - name: Setup operator environment
         uses: charmed-kubernetes/actions-operator@main
         with:
