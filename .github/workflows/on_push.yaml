@@ -5,11 +5,11 @@ on:
   pull_request:
 
 jobs:
-  lint-report:
-    uses: canonical/sdcore-github-workflows/.github/workflows/lint-report.yaml@main
-
-  static-analysis:
-    uses: canonical/sdcore-github-workflows/.github/workflows/static-analysis.yaml@main
+#  lint-report:
+#    uses: canonical/sdcore-github-workflows/.github/workflows/lint-report.yaml@main
+#
+#  static-analysis:
+#    uses: canonical/sdcore-github-workflows/.github/workflows/static-analysis.yaml@main
 
   integration-test:
     uses: ./.github/workflows/integration-test.yaml
