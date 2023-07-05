@@ -10,7 +10,7 @@ permissions:
 jobs:
   start-runner:
     name: Start self-hosted EC2 runner
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       label: ${{ steps.start-ec2-runner.outputs.label }}
       ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
@@ -21,7 +21,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-west-2
       - name: Start EC2 runner
         id: start-ec2-runner
         uses: machulav/ec2-github-runner@v2
@@ -90,7 +90,7 @@ jobs:
     needs:
       - start-runner
       - integration-tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
       - name: Checkout
@@ -99,7 +99,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-west-2
       - name: Stop EC2 runner
         uses: ./.github/actions/ec2-github-runner/
         with:
