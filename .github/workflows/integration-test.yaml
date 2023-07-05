@@ -21,7 +21,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: "${{ secrets.ROLE_TO_ASSUME }}"
-          aws-region: "${{ env.AWS_REGION }}"
+          aws-region: "${{ secrets.AWS_REGION }}"
       - name: Start EC2 runner
         id: start-ec2-runner
         uses: machulav/ec2-github-runner@v2
