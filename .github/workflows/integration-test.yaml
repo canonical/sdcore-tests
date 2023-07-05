@@ -28,10 +28,10 @@ jobs:
         with:
           mode: start
           github-token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
-          ec2-image-id: "${{ env.IMAGE_ID }}"
-          ec2-instance-type: "${{ env.INSTANCE_TYPE }}"
-          subnet-id: "${{ env.AWS_SUBNET_ID }}"
-          security-group-id: "${{ env.AWS_SECURITY_GROUP_ID }}"
+          ec2-image-id: "${{ secrets.IMAGE_ID }}"
+          ec2-instance-type: "${{ secrets.INSTANCE_TYPE }}"
+          subnet-id: "${{ secrets.AWS_SUBNET_ID }}"
+          security-group-id: "${{ secrets.AWS_SECURITY_GROUP_ID }}"
           aws-resource-tags: >
             [
               {"Key": "Name", "Value": "sd-core-tests-runner"},
@@ -99,7 +99,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: "${{ secrets.ROLE_TO_ASSUME }}"
-          aws-region: "${{ env.AWS_REGION }}"
+          aws-region: "${{ secrets.AWS_REGION }}"
       - name: Stop EC2 runner
         uses: machulav/ec2-github-runner@v2
         with:
