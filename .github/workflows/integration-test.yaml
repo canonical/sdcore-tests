@@ -84,13 +84,13 @@ jobs:
           echo "# Initialize microk8s"
           sudo usermod -a -G snap_microk8s ubuntu
           microk8s status --wait-ready
-          microk8s enable hostpath-storage dns metallb:10.1.1.1-10.1.1.254
+          microk8s enable hostpath-storage
           microk8s enable dns 
           microk8s enable metallb:10.1.1.1-10.1.1.254
 
           echo "# Bootstrap controller"
           su ubuntu -c "mkdir -p /home/ubuntu/.local/share"
-          su ubuntu -c "juju bootstrap --debug --verbose microk8s integration-tests --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG'"
+          su ubuntu -c "juju bootstrap microk8s integration-tests --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG'"
       - name: Enable Multus addon
         continue-on-error: true
         run: |
@@ -109,25 +109,25 @@ jobs:
           name: juju-crashdump
           path: juju-crashdump-*.tar.xz
 
-  stop-runner:
-    name: Stop self-hosted EC2 runner
-    needs:
-      - start-runner
-      - integration-tests
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: "${{ secrets.ROLE_TO_ASSUME }}"
-          aws-region: "${{ secrets.AWS_REGION }}"
-      - name: Stop EC2 runner
-        uses: machulav/ec2-github-runner@v2
-        with:
-          mode: stop
-          github-token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
-          label: ${{ needs.start-runner.outputs.label }}
-          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
+#  stop-runner:
+#    name: Stop self-hosted EC2 runner
+#    needs:
+#      - start-runner
+#      - integration-tests
+#    runs-on: ubuntu-latest
+#    if: ${{ always() }}
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          role-to-assume: "${{ secrets.ROLE_TO_ASSUME }}"
+#          aws-region: "${{ secrets.AWS_REGION }}"
+#      - name: Stop EC2 runner
+#        uses: machulav/ec2-github-runner@v2
+#        with:
+#          mode: stop
+#          github-token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
+#          label: ${{ needs.start-runner.outputs.label }}
+#          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
