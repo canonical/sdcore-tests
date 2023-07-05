@@ -13,3 +13,4 @@ jobs:
 
   integration-test:
     uses: ./.github/workflows/integration-test.yaml
+    secrets: inherit
