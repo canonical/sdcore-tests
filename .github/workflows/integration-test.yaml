@@ -3,9 +3,56 @@ name: Integration test
 on:
   workflow_call:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
-  integration-test:
+  start-runner:
+    name: Start self-hosted EC2 runner
     runs-on: ubuntu-22.04
+    outputs:
+      label: ${{ steps.start-ec2-runner.outputs.label }}
+      ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Start EC2 runner
+        id: start-ec2-runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: start
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          ec2-image-id: ${{ secrets.IMAGE_ID }}
+          ec2-instance-type: ${{ secrets.INSTANCE_TYPE }}
+          subnet-id: ${{ secrets.AWS_SUBNET_ID }}
+          security-group-id: ${{ secrets.AWS_SECURITY_GROUP_ID }}
+          aws-resource-tags: >
+            [
+              {"Key": "Name", "Value": "sd-core-tests-runner"},
+              {"Key": "GitHubRepository", "Value": "${{ github.repository }}"}
+            ]
+          block-device-mappings: >
+            [ 
+              {
+                "DeviceName": "/dev/sda1", 
+                "Ebs": { 
+                  "DeleteOnTermination": true, 
+                  "VolumeSize": 50, 
+                  "VolumeType": "gp2"
+                } 
+              } 
+            ]
+
+  integration-test:
+    name: Integration tests
+    needs: start-runner
+    runs-on: ${{ needs.start-runner.outputs.label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,3 +84,26 @@ jobs:
         with:
           name: juju-crashdump
           path: juju-crashdump-*.tar.xz
+
+  stop-runner:
+    name: Stop self-hosted EC2 runner
+    needs:
+      - start-runner
+      - integration-tests
+    runs-on: ubuntu-22.04
+    if: ${{ always() }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Stop EC2 runner
+        uses: ./.github/actions/ec2-github-runner/
+        with:
+          mode: stop
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          label: ${{ needs.start-runner.outputs.label }}
+          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
