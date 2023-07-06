@@ -105,6 +105,7 @@ jobs:
       - name: Run integration tests
         run: |
           chown -R ubuntu:ubuntu /actions-runner
+          sleep 20000
           su ubuntu -c "tox -vve integration"
       - name: Archive juju crashdump
         if: failure()
