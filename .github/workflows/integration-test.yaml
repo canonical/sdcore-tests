@@ -62,14 +62,6 @@ jobs:
           echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCqMVo+FKEgWzu+W9fklR/qGDdG3wrQ+lMv7ZUHr5lFUYLhhdrEVTgSs72PPxKurDzt4Vve1hWWCP+kWiK+SgLOMLSxqrTUnN8+3shH3GQWAAQLkFPXphnZOEgIXXlzl9GI12wvRPG0Aq0otskO57OTbL6/2PvXDbnVomEGD84AI/Sfn4oPQ61hjLMHuNN8krGryP1GYb4vEDIk+bL/Jr5QKQq36ig9qlCxdXhGmajTknZh3urPoi8f6/V+LjxItEU8nwZnLEfQyWZDscXF4o/bhq7NwDmffyozD4w0QmmrUy58RBFjqP3f3B1L7sIqOHBNpa81WTP1HnvaGXUtOo2b/fBP7YTHy+qVo6bUNri3wFeTORgh9BZ8FN5f4FCIM74nwgYwNV+xvewmkEPLCwnagt+7VxV0Ld0pzPXmSF8swoggBNZpdoxLzHUIgH1x0Pd3cEHFjTv45qL4j9CyjgYrjCfhLJlh4R0jRsbrnnFT/RtGHJo9Ps09/JpddN3VElM= gmerold-hp" > /home/ubuntu/.ssh/authorized_keys
           chmod 400 /home/ubuntu/.ssh/authorized_keys
           chown -R ubuntu:ubuntu /home/ubuntu/.ssh/
-          snap refresh lxd --channel=5.13/stable
-          echo "# Initialize LXD"
-          lxd init --auto
-          
-          echo "# Configure LXD"
-          lxc --project charmcraft project create local:charmcraft || true
-          lxc --project charmcraft profile device add default root disk path=/ pool=default type=disk || true
-          lxc --project charmcraft profile device add default eth0 nic name=eth0 network=lxdbr0 || true
           
           echo "# Install tox"
           apt update -yqq
@@ -105,7 +97,6 @@ jobs:
       - name: Run integration tests
         run: |
           chown -R ubuntu:ubuntu /actions-runner
-          sleep 20000
           su ubuntu -c "tox -vve integration"
       - name: Archive juju crashdump
         if: failure()
@@ -113,26 +104,26 @@ jobs:
         with:
           name: juju-crashdump
           path: juju-crashdump-*.tar.xz
-
-  stop-runner:
-    name: Stop self-hosted EC2 runner
-    needs:
-      - start-runner
-      - integration-tests
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: "${{ secrets.ROLE_TO_ASSUME }}"
-          aws-region: "${{ secrets.AWS_REGION }}"
-      - name: Stop EC2 runner
-        uses: ./.github/actions/ec2-github-runner/
-        with:
-          mode: stop
-          github-token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
-          label: ${{ needs.start-runner.outputs.label }}
-          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
+#
+#  stop-runner:
+#    name: Stop self-hosted EC2 runner
+#    needs:
+#      - start-runner
+#      - integration-tests
+#    runs-on: ubuntu-latest
+#    if: ${{ always() }}
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          role-to-assume: "${{ secrets.ROLE_TO_ASSUME }}"
+#          aws-region: "${{ secrets.AWS_REGION }}"
+#      - name: Stop EC2 runner
+#        uses: ./.github/actions/ec2-github-runner/
+#        with:
+#          mode: stop
+#          github-token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
+#          label: ${{ needs.start-runner.outputs.label }}
+#          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
