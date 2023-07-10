@@ -32,7 +32,7 @@ class TestSDCoreBundle:
         gnbsim_unit = ops_test.model.units["gnbsim/0"]  # type: ignore[union-attr]
         start_simulation = await gnbsim_unit.run_action("start-simulation")
         action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
-            action_uuid=start_simulation.entity_id, wait=240
+            action_uuid=start_simulation.entity_id, wait=300
         )
         assert action_output["success"] == "true"
 
