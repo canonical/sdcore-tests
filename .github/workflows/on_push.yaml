@@ -2,8 +2,6 @@ name: CI workflow on push
 
 on:
   push:
-    branches:
-      - 'main'
   pull_request:
 
 jobs:
@@ -15,3 +13,4 @@ jobs:
 
   integration-test:
     uses: ./.github/workflows/integration-test.yaml
+    secrets: inherit

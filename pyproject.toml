@@ -26,7 +26,26 @@ max-complexity = 10
 exclude = [".git", "__pycache__", ".tox", "build", "dist", "*.egg_info", "venv"]
 select = ["E", "W", "F", "C", "N", "R", "D", "H"]
 # Ignore D107 Missing docstring in __init__
-ignore = ["D107"]
+ignore = ["D107", "F401", "F811"]
 # D100, D101, D102, D103: Ignore missing docstrings in tests
 per-file-ignores = ["tests/*:D100,D101,D102,D103,D104"]
 docstring-convention = "google"
+
+[tool.mypy]
+pretty = true
+python_version = 3.8
+mypy_path = "$MYPY_CONFIG_FILE_DIR/tests/integration"
+follow_imports = "normal"
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unused_configs = true
+show_traceback = true
+show_error_codes = true
+namespace_packages = true
+explicit_package_bases = true
+check_untyped_defs = true
+allow_redefinition = true
+
+[[tool.mypy.overrides]]
+module = ["ops.*"]
+ignore_missing_imports = true
