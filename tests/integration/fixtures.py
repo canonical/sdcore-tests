@@ -52,7 +52,7 @@ async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
         apps=["gnbsim"],
         raise_on_error=False,
         status="active",
-        idle_period=30,
+        idle_period=10,
         timeout=300,
     )
 
