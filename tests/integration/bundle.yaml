@@ -43,12 +43,12 @@ applications:
     scale: 1
     trust: true
   upf:
-    charm: sdcore-upf
-    channel: edge
+    charm: /home/runner/work/sdcore-tests/sdcore-upf-operator/sdcore-upf_ubuntu-22.04-amd64.charm
     scale: 1
+    series: "jammy"
     trust: true
     resources:
-      bessd-image: gmerold/sdcore-upf-bess:1.3
+      bessd-image: ghcr.io/canonical/sdcore-upf-bess:1.3
       pfcp-agent-image: ghcr.io/canonical/sdcore-upf-pfcpiface:1.3
   webui:
     charm: sdcore-webui
