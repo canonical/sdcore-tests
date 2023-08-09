@@ -44,8 +44,9 @@ class TestSDCoreBundle:
         """
         await self._deploy_sdcore_router(ops_test)
         await ops_test.model.deploy(  # type: ignore[union-attr]
-            entity_url="https://charmhub.io/sdcore",
-            channel="latest/edge",
+            entity_url="./tests/integration/bundle.yaml",
+            # entity_url="https://charmhub.io/sdcore",
+            # channel="latest/edge",
             trust=True,
         )
 
