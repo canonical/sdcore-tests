@@ -58,11 +58,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup operator environment
         run: |
-          mkdir -p /home/ubuntu/.ssh/
-          echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCqMVo+FKEgWzu+W9fklR/qGDdG3wrQ+lMv7ZUHr5lFUYLhhdrEVTgSs72PPxKurDzt4Vve1hWWCP+kWiK+SgLOMLSxqrTUnN8+3shH3GQWAAQLkFPXphnZOEgIXXlzl9GI12wvRPG0Aq0otskO57OTbL6/2PvXDbnVomEGD84AI/Sfn4oPQ61hjLMHuNN8krGryP1GYb4vEDIk+bL/Jr5QKQq36ig9qlCxdXhGmajTknZh3urPoi8f6/V+LjxItEU8nwZnLEfQyWZDscXF4o/bhq7NwDmffyozD4w0QmmrUy58RBFjqP3f3B1L7sIqOHBNpa81WTP1HnvaGXUtOo2b/fBP7YTHy+qVo6bUNri3wFeTORgh9BZ8FN5f4FCIM74nwgYwNV+xvewmkEPLCwnagt+7VxV0Ld0pzPXmSF8swoggBNZpdoxLzHUIgH1x0Pd3cEHFjTv45qL4j9CyjgYrjCfhLJlh4R0jRsbrnnFT/RtGHJo9Ps09/JpddN3VElM= gmerold-hp" > /home/ubuntu/.ssh/authorized_keys
-          chmod 400 /home/ubuntu/.ssh/authorized_keys
-          chown -R ubuntu:ubuntu /home/ubuntu/.ssh/
-          
           echo "# Install tox"
           apt update -yqq
           apt install -yqq python3-pip
