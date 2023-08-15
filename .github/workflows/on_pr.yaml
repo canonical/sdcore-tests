@@ -1,0 +1,11 @@
+name: Tests
+
+on:
+  pull_request:
+
+jobs:
+ test-self-hosted-large-container:
+   runs-on: [self-hosted, linux, X64, jammy, large]
+   steps:
+     - uses: actions/checkout@v3
+     - run: curl https://www.google.com.au
