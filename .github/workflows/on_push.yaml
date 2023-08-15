@@ -1,7 +1,7 @@
 name: Tests
 
 on:
- push:
+  pull_request:
 
 jobs:
  test-self-hosted-large-container:
@@ -9,13 +9,3 @@ jobs:
    steps:
      - uses: actions/checkout@v3
      - run: curl https://www.google.com.au
- test-self-hosted-xlarge:
-   runs-on: [self-hosted, linux, X64, jammy, xlarge]
-   steps:
-     - uses: actions/checkout@v3
-     - run: echo hi
- test-self-hosted-two-xlarge:
-   runs-on: [self-hosted, linux, X64, jammy, two-xlarge]
-   steps:
-     - uses: actions/checkout@v3
-     - run: echo hi
