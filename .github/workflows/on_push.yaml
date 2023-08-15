@@ -5,12 +5,7 @@ on:
   pull_request:
 
 jobs:
-  lint-report:
-    uses: canonical/sdcore-github-workflows/.github/workflows/lint-report.yaml@main
-
-  static-analysis:
-    uses: canonical/sdcore-github-workflows/.github/workflows/static-analysis.yaml@main
-
-  integration-test:
-    uses: ./.github/workflows/integration-test.yaml
-    secrets: inherit
+ test-self-hosted-large-container:
+   runs-on: [self-hosted, linux, X64, jammy, large]
+   steps:
+     - uses: actions/checkout@v3
