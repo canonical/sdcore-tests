@@ -5,7 +5,7 @@ on:
 
 jobs:
   integration-test:
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, linux, X64, jammy, large]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,7 +19,7 @@ jobs:
           juju-channel: 3.1/stable
           provider: microk8s
           channel: 1.27-strict/stable
-          microk8s-addons: "hostpath-storage dns"
+          microk8s-addons: "hostpath-storage"
       - name: Enable Multus addon
         continue-on-error: true
         run: |
