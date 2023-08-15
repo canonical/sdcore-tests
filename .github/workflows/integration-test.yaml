@@ -19,7 +19,7 @@ jobs:
           juju-channel: 3.1/stable
           provider: microk8s
           channel: 1.27-strict/stable
-          microk8s-addons: "hostpath-storage"
+          microk8s-addons: "hostpath-storage dns"
       - name: Enable Multus addon
         continue-on-error: true
         run: |
