@@ -5,7 +5,7 @@ on:
 
 jobs:
   integration-test:
-    runs-on: [self-hosted, linux, X64, jammy, large]
+    runs-on: [self-hosted, linux, X64, jammy, xlarge]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
