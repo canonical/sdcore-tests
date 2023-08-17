@@ -6,10 +6,27 @@ import pytest
 from pytest_operator.plugin import OpsTest
 from webui_helper import WebUI
 
+COS_MODEL_NAME = "cos-lite"
 GNBSIM_MODEL_NAME = "simulator"
 TEST_DEVICE_GROUP_NAME = "integration_tests"
 TEST_IMSI = "208930100007487"
 TEST_NETWORK_SLICE_NAME = "e2e"
+
+
+@pytest.fixture(scope="module")
+@pytest.mark.abort_on_fail
+async def deploy_cos(ops_test: OpsTest):
+    """Deploys observability model.
+
+    COS model includes:
+    - cos-lite bundle
+    - cos-configuration-k8s charm providing custom Charmed SD-Core dashboard
+
+    Args:
+        ops_test: OpsTest
+    """
+    await deploy_cos_lite(ops_test)
+    await deploy_cos_configuration(ops_test)
 
 
 @pytest.fixture(scope="module")
@@ -55,6 +72,67 @@ async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
         idle_period=10,
         timeout=300,
     )
+
+
+async def deploy_cos_lite(ops_test: OpsTest):
+    """Deploys `cos-lite` bundle.
+
+    Args:
+        ops_test: OpsTest
+    """
+    await ops_test.track_model(
+        alias=COS_MODEL_NAME,
+        model_name=COS_MODEL_NAME,
+        cloud_name=ops_test.cloud_name,
+    )
+
+    with ops_test.model_context(COS_MODEL_NAME):
+        await ops_test.model.deploy(  # type: ignore[union-attr]
+            entity_url="https://charmhub.io/cos-lite",
+            trust=True,
+        )
+        await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
+            apps=[*ops_test.model.applications],  # type: ignore[union-attr]
+            raise_on_error=False,
+            status="active",
+            timeout=600,
+        )
+
+        # await ops_test.model.create_offer(  # type: ignore[union-attr]
+        #     endpoint="logging",
+        #     offer_name="loki",
+        #     application_name="loki",
+        # )
+        await ops_test.model.create_offer(  # type: ignore[union-attr]
+            endpoint="receive-remote-write",
+            offer_name="prometheus",
+            application_name="prometheus",
+        )
+
+
+async def deploy_cos_configuration(ops_test: OpsTest):
+    """Deploys `cos-configuration-k8s` charm.
+
+    Args:
+        ops_test: OpsTest
+    """
+    with ops_test.model_context(COS_MODEL_NAME):
+        await ops_test.model.deploy(  # type: ignore[union-attr]
+            "cos-configuration-k8s",
+            config={
+                "git_repo": "https://github.com/canonical/sdcore-cos-configuration",
+                "git_branch": "main",
+                "git_depth": 1,
+                "grafana_dashboards_path": "grafana_dashboards/sdcore/",
+            },
+        )
+        await ops_test.model.add_relation("cos-configuration-k8s", "grafana")  # type: ignore[union-attr]  # noqa: E501
+        await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
+            apps=["cos-configuration-k8s"],
+            raise_on_error=False,
+            status="active",
+            timeout=300,
+        )
 
 
 async def get_unit_address(ops_test: OpsTest, app_name: str, unit_num: int) -> str:
