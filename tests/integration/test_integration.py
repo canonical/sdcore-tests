@@ -5,7 +5,7 @@
 import logging
 
 import pytest
-from fixtures import configure_sdcore, deploy_gnbsim
+from fixtures import configure_sdcore, deploy_cos, deploy_gnbsim
 from pytest_operator.plugin import OpsTest
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 
 class TestSDCoreBundle:
     @pytest.mark.abort_on_fail
-    async def test_given_sdcore_bundle_when_deploy_then_status_is_active(self, ops_test: OpsTest):
+    async def test_given_sdcore_bundle_when_deploy_then_status_is_active(
+        self, ops_test: OpsTest, deploy_cos
+    ):
         await self._deploy_sdcore(ops_test)
         apps = [*ops_test.model.applications]  # type: ignore[union-attr]
         apps.remove("grafana-agent-k8s")
@@ -44,11 +46,33 @@ class TestSDCoreBundle:
         """
         await self._deploy_sdcore_router(ops_test)
         await ops_test.model.deploy(  # type: ignore[union-attr]
-            entity_url="./tests/integration/bundle.yaml",
-            # entity_url="https://charmhub.io/sdcore",
-            # channel="latest/edge",
+            entity_url="https://charmhub.io/sdcore",
+            channel="latest/edge",
             trust=True,
         )
+
+        consume_prometheus_run_args = [
+            "juju",
+            "consume",
+            "cos-lite.prometheus",
+        ]
+        retcode, stdout, stderr = await ops_test.run(*consume_prometheus_run_args)
+        if retcode != 0:
+            raise RuntimeError(f"Error: {stderr}")
+        await ops_test.model.add_relation(  # type: ignore[union-attr]
+            "prometheus:receive-remote-write", "grafana-agent-k8s:send-remote-write"
+        )
+        # consume_loki_run_args = [
+        #     "juju",
+        #     "consume",
+        #     "cos-lite.loki",
+        # ]
+        # retcode, stdout, stderr = await ops_test.run(*consume_loki_run_args)
+        # if retcode != 0:
+        #     raise RuntimeError(f"Error: {stderr}")
+        # await ops_test.model.add_relation(  # type: ignore[union-attr]
+        #     "loki:logging", "grafana-agent-k8s:logging-consumer"
+        # )
 
     @staticmethod
     async def _deploy_sdcore_router(ops_test: OpsTest):
