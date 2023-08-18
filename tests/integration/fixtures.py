@@ -95,7 +95,7 @@ async def deploy_cos_lite(ops_test: OpsTest):
             apps=[*ops_test.model.applications],  # type: ignore[union-attr]
             raise_on_error=False,
             status="active",
-            timeout=600,
+            timeout=1000,
         )
 
         await _create_cross_model_relation_offer(
