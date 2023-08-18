@@ -98,15 +98,17 @@ async def deploy_cos_lite(ops_test: OpsTest):
             timeout=600,
         )
 
-        # await ops_test.model.create_offer(  # type: ignore[union-attr]
-        #     endpoint="logging",
-        #     offer_name="loki",
-        #     application_name="loki",
-        # )
-        await ops_test.model.create_offer(  # type: ignore[union-attr]
-            endpoint="receive-remote-write",
-            offer_name="prometheus",
+        await _create_cross_model_relation_offer(
+            ops_test,
+            model_name=COS_MODEL_NAME,
+            application_name="loki",
+            relation_name="logging",
+        )
+        await _create_cross_model_relation_offer(
+            ops_test,
+            model_name=COS_MODEL_NAME,
             application_name="prometheus",
+            relation_name="receive-remote-write",
         )
 
 
@@ -148,3 +150,20 @@ async def get_unit_address(ops_test: OpsTest, app_name: str, unit_num: int) -> s
     """
     status = await ops_test.model.get_status()  # type: ignore[union-attr]
     return status["applications"][app_name]["units"][f"{app_name}/{unit_num}"]["address"]
+
+
+async def _create_cross_model_relation_offer(
+    ops_test: OpsTest, model_name: str, application_name: str, relation_name: str
+) -> None:
+    """Creates a cross-model relation offer.
+
+    Args:
+        ops_test: OpsTest
+        model_name: Provider model name
+        application_name: Provider application
+        relation_name: Provider relation name
+    """
+    offer_run_args = ["juju", "offer", f"{model_name}.{application_name}:{relation_name}"]
+    retcode, stdout, stderr = await ops_test.run(*offer_run_args)
+    if retcode != 0:
+        raise RuntimeError(f"Error: {stderr}")
