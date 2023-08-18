@@ -17,10 +17,8 @@ class TestSDCoreBundle:
         self, ops_test: OpsTest, deploy_cos
     ):
         await self._deploy_sdcore(ops_test)
-        apps = [*ops_test.model.applications]  # type: ignore[union-attr]
-        apps.remove("grafana-agent-k8s")
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
-            apps=apps,
+            apps=[*ops_test.model.applications],  # type: ignore[union-attr]
             raise_on_error=False,
             status="active",
             idle_period=10,
@@ -51,28 +49,22 @@ class TestSDCoreBundle:
             trust=True,
         )
 
-        consume_prometheus_run_args = [
-            "juju",
-            "consume",
-            "cos-lite.prometheus",
-        ]
-        retcode, stdout, stderr = await ops_test.run(*consume_prometheus_run_args)
-        if retcode != 0:
-            raise RuntimeError(f"Error: {stderr}")
-        await ops_test.model.add_relation(  # type: ignore[union-attr]
-            "prometheus:receive-remote-write", "grafana-agent-k8s:send-remote-write"
+        await self._create_cross_model_relation(
+            ops_test,
+            provider_model="cos-lite",
+            offer_name="prometheus",
+            provider_relation_name="receive-remote-write",
+            requirer_app="grafana-agent-k8s",
+            requirer_relation_name="send-remote-write",
         )
-        # consume_loki_run_args = [
-        #     "juju",
-        #     "consume",
-        #     "cos-lite.loki",
-        # ]
-        # retcode, stdout, stderr = await ops_test.run(*consume_loki_run_args)
-        # if retcode != 0:
-        #     raise RuntimeError(f"Error: {stderr}")
-        # await ops_test.model.add_relation(  # type: ignore[union-attr]
-        #     "loki:logging", "grafana-agent-k8s:logging-consumer"
-        # )
+        await self._create_cross_model_relation(
+            ops_test,
+            provider_model="cos-lite",
+            offer_name="loki",
+            provider_relation_name="logging",
+            requirer_app="grafana-agent-k8s",
+            requirer_relation_name="logging-consumer",
+        )
 
     @staticmethod
     async def _deploy_sdcore_router(ops_test: OpsTest):
@@ -93,4 +85,34 @@ class TestSDCoreBundle:
             status="active",
             idle_period=10,
             timeout=300,
+        )
+
+    @staticmethod
+    async def _create_cross_model_relation(
+        ops_test: OpsTest,
+        provider_model: str,
+        offer_name: str,
+        provider_relation_name: str,
+        requirer_app: str,
+        requirer_relation_name: str,
+    ) -> None:
+        """Creates a cross-model relation.
+
+        1. Consumes an offer created by the relation provider model
+        2. Creates a relation between the provider and the consumer.
+
+        Args:
+            ops_test: OpsTest
+            provider_model: Provider model name
+            offer_name: Relation offer name
+            provider_relation_name: Provider relation name
+            requirer_app: Requirer application name
+            requirer_relation_name: Requirer relation name
+        """
+        consume_run_args = ["juju", "consume", f"{provider_model}.{offer_name}"]
+        retcode, stdout, stderr = await ops_test.run(*consume_run_args)
+        if retcode != 0:
+            raise RuntimeError(f"Error: {stderr}")
+        await ops_test.model.add_relation(  # type: ignore[union-attr]
+            f"{offer_name}:{provider_relation_name}", f"{requirer_app}:{requirer_relation_name}"
         )
