@@ -3,84 +3,23 @@ name: Integration test
 on:
   workflow_call:
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
-  start-runner:
-    name: Start self-hosted EC2 runner
-    runs-on: ubuntu-latest
-    outputs:
-      label: ${{ steps.start-ec2-runner.outputs.label }}
-      ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
+  integration-test:
+    runs-on: [self-hosted, linux, X64, jammy, xlarge]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: "${{ secrets.ROLE_TO_ASSUME }}"
-          aws-region: "${{ secrets.AWS_REGION }}"
-      - name: Start EC2 runner
-        id: start-ec2-runner
-        uses: ./.github/actions/ec2-github-runner/
-        with:
-          mode: start
-          github-token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
-          ec2-image-id: "${{ secrets.IMAGE_ID }}"
-          ec2-instance-type: "${{ secrets.INSTANCE_TYPE }}"
-          subnet-id: "${{ secrets.AWS_SUBNET_ID }}"
-          security-group-id: "${{ secrets.AWS_SECURITY_GROUP_ID }}"
-          aws-resource-tags: >
-            [
-              {"Key": "Name", "Value": "sd-core-tests-runner"},
-              {"Key": "GitHubRepository", "Value": "${{ github.repository }}"}
-            ]
-          block-device-mappings: >
-            [ 
-              {
-                "DeviceName": "/dev/sda1", 
-                "Ebs": { 
-                  "DeleteOnTermination": true, 
-                  "VolumeSize": 50, 
-                  "VolumeType": "gp2"
-                } 
-              } 
-            ]
-
-  integration-tests:
-    name: Integration tests
-    needs: start-runner
-    runs-on: ${{ needs.start-runner.outputs.label }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup operator environment
+      - name: Proxy
         run: |
-          echo "# Install tox"
-          apt update -yqq
-          apt install -yqq python3-pip
-          pip3 install tox
-
-          echo "# Install Juju"
-          snap install juju --channel=3.1/stable
-
-          echo "# Install charmcraft"
-          snap install charmcraft --classic
-
-          echo "# Install microk8s"
-          snap install microk8s --channel=1.27-strict/stable
-
-          echo "# Initialize microk8s"
-          sudo usermod -a -G snap_microk8s ubuntu
-          microk8s status --wait-ready
-          microk8s enable hostpath-storage
-          microk8s enable metallb:10.1.1.1-10.1.1.254
-
-          echo "# Bootstrap controller"
-          su ubuntu -c "mkdir -p /home/ubuntu/.local/share"
-          su ubuntu -c "juju bootstrap microk8s integration-tests --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG'"
+          sudo sed -i "s#NO_PROXY.*#NO_PROXY=127.0.0.1,localhost,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
+          sudo sed -i "s#no_proxy.*#no_proxy=127.0.0.1,localhost,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
+      - name: Setup operator environment
+        uses: charmed-kubernetes/actions-operator@main
+        with:
+          juju-channel: 3.1/stable
+          provider: microk8s
+          channel: 1.27-strict/stable
+          microk8s-addons: "hostpath-storage"
       - name: Enable Multus addon
         continue-on-error: true
         run: |
@@ -89,35 +28,10 @@ jobs:
           sudo microk8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
           sudo microk8s kubectl auth can-i create network-attachment-definitions
       - name: Run integration tests
-        run: |
-          chown -R ubuntu:ubuntu /actions-runner
-          su ubuntu -c "tox -vve integration"
+        run: tox -vve integration
       - name: Archive juju crashdump
         if: failure()
         uses: actions/upload-artifact@v3
         with:
           name: juju-crashdump
           path: juju-crashdump-*.tar.xz
-
-  stop-runner:
-    name: Stop self-hosted EC2 runner
-    needs:
-      - start-runner
-      - integration-tests
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: "${{ secrets.ROLE_TO_ASSUME }}"
-          aws-region: "${{ secrets.AWS_REGION }}"
-      - name: Stop EC2 runner
-        uses: ./.github/actions/ec2-github-runner/
-        with:
-          mode: stop
-          github-token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
-          label: ${{ needs.start-runner.outputs.label }}
-          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
