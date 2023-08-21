@@ -3,10 +3,6 @@ name: Integration test
 on:
   workflow_call:
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   integration-test:
     runs-on: [self-hosted, linux, X64, jammy, xlarge]
