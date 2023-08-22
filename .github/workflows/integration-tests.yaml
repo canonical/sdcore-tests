@@ -29,8 +29,15 @@ jobs:
           sudo microk8s kubectl auth can-i create network-attachment-definitions
       - name: Containerd proxy
         run: |
+          echo "=============================================================================="
+          sudo cat /var/snap/microk8s/current/args/kube-proxy | grep cluster-cidr
+          echo "------------------------------------------------------------------------------"
+          sudo cat /var/snap/microk8s/current/args/kube-apiserver | grep service-cluster-ip-range
+          echo "------------------------------------------------------------------------------"
+          sudo microk8s kubectl get nodes -o wide
+          echo "=============================================================================="
           echo "HTTPS_PROXY=https://squid.internal:3128" | sudo tee --append /var/snap/microk8s/current/args/containerd-env
-          echo "NO_PROXY=127.0.0.1,127.0.0.0/8,localhost,::1,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc" | sudo tee --append /var/snap/microk8s/current/args/containerd-env
+          echo 'NO_PROXY="127.0.0.1,127.0.0.0/8,localhost,::1,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc"' | sudo tee --append /var/snap/microk8s/current/args/containerd-env
           sudo microk8s stop
           sudo microk8s start
           sudo microk8s status --wait-ready
