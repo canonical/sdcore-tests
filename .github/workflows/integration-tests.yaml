@@ -57,30 +57,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup operator environment
-        run: |
-          echo "# Install tox"
-          apt update -yqq
-          apt install -yqq python3-pip
-          pip3 install tox
-
-          echo "# Install Juju"
-          snap install juju --channel=3.1/stable
-
-          echo "# Install charmcraft"
-          snap install charmcraft --classic
-
-          echo "# Install microk8s"
-          snap install microk8s --channel=1.27-strict/stable
-
-          echo "# Initialize microk8s"
-          sudo usermod -a -G snap_microk8s ubuntu
-          microk8s status --wait-ready
-          microk8s enable hostpath-storage
-          microk8s enable metallb:10.1.1.1-10.1.1.254
-
-          echo "# Bootstrap controller"
-          su ubuntu -c "mkdir -p /home/ubuntu/.local/share"
-          su ubuntu -c "juju bootstrap microk8s integration-tests --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG'"
+        uses: charmed-kubernetes/actions-operator@main
+        with:
+          juju-channel: 3.1/stable
+          provider: microk8s
+          channel: 1.27-strict/stable
+          microk8s-addons: "hostpath-storage metallb:10.1.1.1-10.1.1.254"
       - name: Enable Multus addon
         continue-on-error: true
         run: |
@@ -89,9 +71,7 @@ jobs:
           sudo microk8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
           sudo microk8s kubectl auth can-i create network-attachment-definitions
       - name: Run integration tests
-        run: |
-          chown -R ubuntu:ubuntu /actions-runner
-          su ubuntu -c "tox -vve integration"
+        run: tox -vve integration
       - name: Archive juju crashdump
         if: failure()
         uses: actions/upload-artifact@v3
