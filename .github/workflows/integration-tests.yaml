@@ -22,6 +22,10 @@ jobs:
           microk8s-addons: "hostpath-storage metallb:10.1.1.1-10.1.1.254"
       - name: Microk8s proxy
         run: |
+          sudo echo "HTTPS_PROXY=https://squid.internal:3128" >> /var/snap/microk8s/current/args/containerd-env
+          sudo echo "NO_PROXY=127.0.0.1,127.0.0.0/8,localhost,::1,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc" >> /var/snap/microk8s/current/args/containerd-env
+          sudo snap restart microk8s
+          sudo microk8s status --wait-ready
           sudo cat /var/snap/microk8s/current/args/containerd-env
       - name: Enable Multus addon
         continue-on-error: true
