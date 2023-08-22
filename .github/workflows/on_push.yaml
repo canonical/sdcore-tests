@@ -2,8 +2,6 @@ name: CI workflow on push
 
 on:
   push:
-    branches:
-      - 'main'
   pull_request:
 
 jobs:
@@ -14,4 +12,5 @@ jobs:
     uses: canonical/sdcore-github-workflows/.github/workflows/static-analysis.yaml@main
 
   integration-test:
-    uses: ./.github/workflows/integration-test.yaml
+    uses: ./.github/workflows/integration-tests.yaml
+    secrets: inherit
