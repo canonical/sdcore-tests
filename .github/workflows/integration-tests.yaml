@@ -11,8 +11,8 @@ jobs:
         uses: actions/checkout@v3
       - name: NO_PROXY workaround
         run: |
-          sudo sed -i "s#NO_PROXY.*#NO_PROXY=127.0.0.1,localhost,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
-          sudo sed -i "s#no_proxy.*#no_proxy=127.0.0.1,localhost,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
+          sudo sed -i "s#NO_PROXY.*#NO_PROXY=127.0.0.1,localhost,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,172.250.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
+          sudo sed -i "s#no_proxy.*#no_proxy=127.0.0.1,localhost,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,172.250.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
       - name: Set Environment Variables
         uses: tw3lveparsecs/github-actions-setvars@v0.2
         with:
@@ -47,7 +47,7 @@ jobs:
           SERVICE_CLUSTER_IP_RANGE=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-apiserver | grep service-cluster-ip-range | awk -F= '{ print $2 }'`
           NODE_INTERNAL_IP=`/usr/bin/sudo microk8s kubectl get nodes -o wide | awk '{ print $6 }' | awk 'END{print}'`
           KUBERNETES_SERVICE_IP=`/usr/bin/sudo microk8s kubectl -n default get svc | awk '{ print $3 }' | awk 'END{print}'`
-          JUJU_MODEL_NO_PROXY="127.0.0.1,localhost,$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,1192.168.1.0/24,.svc,.local"
+          JUJU_MODEL_NO_PROXY="127.0.0.1,localhost,$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,192.168.1.0/24,.svc,.local,192.168.0.0/16,172.250.0.0/16"
           echo "JUJU_MODEL_NO_PROXY=$JUJU_MODEL_NO_PROXY"
 
           echo "# Bootstrap controller"
