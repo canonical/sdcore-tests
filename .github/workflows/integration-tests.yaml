@@ -11,15 +11,46 @@ jobs:
         uses: actions/checkout@v3
       - name: NO_PROXY workaround
         run: |
-          sudo sed -i "s#NO_PROXY.*#NO_PROXY=127.0.0.1,127.0.0.0/8,localhost,::1,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
-          sudo sed -i "s#no_proxy.*#no_proxy=127.0.0.1,127.0.0.0/8,localhost,::1,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
+          sudo sed -i "s#NO_PROXY.*#NO_PROXY=127.0.0.1,localhost,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
+          sudo sed -i "s#no_proxy.*#no_proxy=127.0.0.1,localhost,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc#g" /etc/environment
+
       - name: Setup operator environment
-        uses: charmed-kubernetes/actions-operator@main
-        with:
-          juju-channel: 3.1/stable
-          provider: microk8s
-          channel: 1.27-strict/stable
-          microk8s-addons: "hostpath-storage metallb:10.1.1.1-10.1.1.254"
+        run: |
+          echo "# Install tox"
+          /usr/bin/sudo apt update -yqq
+          /usr/bin/sudo apt install -yqq python3-pip
+          /usr/bin/sudo --preserve-env=http_proxy,https_proxy,no_proxy pip3 install tox==$TOX_VERSION
+
+          echo "# Install Juju"
+          /usr/bin/sudo snap install juju --classic --channel=$JUJU_VERSION
+
+          echo "# Install juju-crashdump"
+          /usr/bin/sudo snap install juju-crashdump --classic --channel=latest
+
+          echo "# Install charmcraft"
+          /usr/bin/sudo snap install charmcraft --classic
+
+          echo "# Install microk8s"
+          /usr/bin/sudo snap install microk8s --channel=$MICROK8S_VERSION
+
+          echo "# Initialize microk8s"
+          /usr/bin/bash -c "sudo usermod -a -G snap_microk8s $USER"
+          /usr/bin/sg snap_microk8s -c "microk8s status --wait-ready"
+          /usr/bin/sg snap_microk8s -c "sudo microk8s enable hostpath-storage"
+          /usr/bin/sg snap_microk8s -c "sudo microk8s enable metallb:10.1.1.1-10.1.1.254"
+          
+          echo "# Get cluster subnets"
+          CLUSTER_CIDR=`cat /var/snap/microk8s/current/args/kube-proxy | grep cluster-cidr | awk -F= '{ print $2 }'`
+          SERVICE_CLUSTER_IP_RANGE=`cat /var/snap/microk8s/current/args/kube-apiserver | grep service-cluster-ip-range | awk -F= '{ print $2 }'`
+          NODE_INTERNAL_IP=`microk8s kubectl get nodes -o wide | awk '{ print $6 }' | awk 'END{print}'`
+          KUBERNETES_SERVICE_IP=`microk8s kubectl -n default get svc | awk '{ print $3 }' | awk 'END{print}'`
+          JUJU_MODEL_NO_PROXY="127.0.0.1,localhost,$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,10.1.1.0/24,.svc,.local"
+
+          echo "# Bootstrap controller"
+          sleep 60  # Microk8s needs time to initialize properly
+          /usr/bin/sg snap_microk8s -c "mkdir -p /home/ubuntu/.local/share"
+          /usr/bin/sg snap_microk8s -c "juju bootstrap --debug --verbose microk8s integration-tests-$GITHUB_RUN_ID --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG' --model-default http-proxy=$HTTP_PROXY --model-default https-proxy=$HTTPS_PROXY --no-proxy=$JUJU_MODEL_NO_PROXY"
+
       - name: Enable Multus addon
         continue-on-error: true
         run: |
@@ -27,21 +58,6 @@ jobs:
           sudo microk8s enable multus
           sudo microk8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
           sudo microk8s kubectl auth can-i create network-attachment-definitions
-      - name: Containerd proxy
-        run: |
-          echo "=============================================================================="
-          sudo cat /var/snap/microk8s/current/args/kube-proxy | grep cluster-cidr
-          echo "------------------------------------------------------------------------------"
-          sudo cat /var/snap/microk8s/current/args/kube-apiserver | grep service-cluster-ip-range
-          echo "------------------------------------------------------------------------------"
-          sudo microk8s kubectl get nodes -o wide
-          echo "=============================================================================="
-          echo "HTTPS_PROXY=https://squid.internal:3128" | sudo tee --append /var/snap/microk8s/current/args/containerd-env
-          echo 'NO_PROXY="127.0.0.1,127.0.0.0/8,localhost,::1,10.0.0.0/8,10.152.0.0/16,172.16.0.0/12,192.168.0.0/16,.canonical.com,.launchpad.net,.internal,.jujucharms.com,.nip.io,.svc"' | sudo tee --append /var/snap/microk8s/current/args/containerd-env
-          sudo microk8s stop
-          sudo microk8s start
-          sudo microk8s status --wait-ready
-          sudo cat /var/snap/microk8s/current/args/containerd-env
       - name: Run integration tests
         run: tox -vve integration
       - name: Archive juju crashdump
