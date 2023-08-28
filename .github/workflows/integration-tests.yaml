@@ -48,11 +48,12 @@ jobs:
           NODE_INTERNAL_IP=`/usr/bin/sg snap_microk8s -c "microk8s kubectl get nodes -o wide | awk '{ print $6 }' | awk 'END{print}'"`
           KUBERNETES_SERVICE_IP=`/usr/bin/sg snap_microk8s -c "microk8s kubectl -n default get svc | awk '{ print $3 }' | awk 'END{print}'"`
           JUJU_MODEL_NO_PROXY="127.0.0.1,localhost,$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,10.1.1.0/24,.svc,.local"
+          echo "JUJU_MODEL_NO_PROXY=$JUJU_MODEL_NO_PROXY"
 
           echo "# Bootstrap controller"
           sleep 60  # Microk8s needs time to initialize properly
           /usr/bin/sg snap_microk8s -c "mkdir -p /home/ubuntu/.local/share"
-          /usr/bin/sg snap_microk8s -c "juju bootstrap --debug --verbose microk8s integration-tests-$GITHUB_RUN_ID --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG' --model-default http-proxy=$HTTP_PROXY --model-default https-proxy=$HTTPS_PROXY --no-proxy=$JUJU_MODEL_NO_PROXY"
+          /usr/bin/sg snap_microk8s -c "juju bootstrap --debug --verbose microk8s integration-tests-$GITHUB_RUN_ID --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG' --model-default http-proxy=$HTTP_PROXY --model-default https-proxy=$HTTPS_PROXY --model-default no-proxy=$JUJU_MODEL_NO_PROXY"
 
       - name: Enable Multus addon
         continue-on-error: true
