@@ -22,7 +22,7 @@ jobs:
           echo "# Install tox"
           /usr/bin/sudo apt update -yqq
           /usr/bin/sudo apt install -yqq python3-pip
-          /usr/bin/sudo --preserve-env=http_proxy,https_proxy,no_proxy pip3 install tox==$TOX_VERSION
+          /usr/bin/sudo --preserve-env=http_proxy,https_proxy,no_proxy pip3 install tox
 
           echo "# Install Juju"
           /usr/bin/sudo snap install juju --classic --channel=$JUJU_VERSION
