@@ -26,7 +26,7 @@ async def deploy_cos(ops_test: OpsTest):
         ops_test: OpsTest
     """
     await deploy_cos_lite(ops_test)
-    # await deploy_cos_configuration(ops_test)
+    await deploy_cos_configuration(ops_test)
 
 
 @pytest.fixture(scope="module")
