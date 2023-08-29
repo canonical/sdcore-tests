@@ -59,7 +59,7 @@ async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
         configure_sdcore: `configure_sdcore` fixture
     """
     await ops_test.model.deploy(  # type: ignore[union-attr]
-        "sdcore-gnbsim",
+        "gnbsim-test",
         application_name="gnbsim",
         channel="latest/edge",
         trust=True,
