@@ -29,6 +29,11 @@ class TestSDCoreBundle:
     async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
         self, ops_test: OpsTest, deploy_gnbsim
     ):
+        logger.error("=====================================================================")
+        import os
+        for env_name, env_value in os.environ.items():
+            logger.error(f"{env_name}: {env_value}")
+        logger.error("=====================================================================")
         gnbsim_unit = ops_test.model.units["gnbsim/0"]  # type: ignore[union-attr]
         start_simulation = await gnbsim_unit.run_action("start-simulation")
         action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
