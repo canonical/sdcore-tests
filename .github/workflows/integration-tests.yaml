@@ -47,7 +47,7 @@ jobs:
           SERVICE_CLUSTER_IP_RANGE=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-apiserver | grep service-cluster-ip-range | awk -F= '{ print $2 }'`
           NODE_INTERNAL_IP=`/usr/bin/sudo microk8s kubectl get nodes -o wide | awk '{ print $6 }' | awk 'END{print}'`
           KUBERNETES_SERVICE_IP=`/usr/bin/sudo microk8s kubectl -n default get svc | awk '{ print $3 }' | awk 'END{print}'`
-          JUJU_MODEL_NO_PROXY="$no_proxy,$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,.local,192.168.0.0/16,172.250.0.0/16"
+          JUJU_MODEL_NO_PROXY="${no_proxy//::1,/},$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,.local,192.168.0.0/16,172.250.0.0/16"
           echo "JUJU_MODEL_NO_PROXY=$JUJU_MODEL_NO_PROXY"
           echo "================================================================================"
           env
