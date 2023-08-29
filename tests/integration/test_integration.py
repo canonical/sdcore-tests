@@ -35,7 +35,8 @@ class TestSDCoreBundle:
             logger.error(f"{env_name}: {env_value}")
         logger.error("=====================================================================")
         logger.error("---------------------------------------------------------------------")
-        logger.error(ops_test.model.get_config())
+        config = await ops_test.model.get_config()
+        logger.error(config)
         logger.error("---------------------------------------------------------------------")
         gnbsim_unit = ops_test.model.units["gnbsim/0"]  # type: ignore[union-attr]
         start_simulation = await gnbsim_unit.run_action("start-simulation")
