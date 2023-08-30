@@ -49,8 +49,9 @@ jobs:
           KUBERNETES_SERVICE_IP=`/usr/bin/sudo microk8s kubectl -n default get svc | awk '{ print $3 }' | awk 'END{print}'`
           JUJU_MODEL_NO_PROXY="${no_proxy//::1,/},$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,.local,192.168.0.0/16,172.250.0.0/16"
           echo "JUJU_MODEL_NO_PROXY=$JUJU_MODEL_NO_PROXY"
+          /usr/bin/sudo apt install lksctp-tools
           echo "================================================================================"
-          env
+          checksctp
           echo "================================================================================"
 
           echo "# Bootstrap controller"
