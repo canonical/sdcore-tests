@@ -24,10 +24,11 @@ class TestSDCoreBundle:
             idle_period=10,
             timeout=1500,
         )
-        get_svc_run_args = ["microk8s", "kubectl", "-n", f"{ops_test.model_name}", "get", "svc"]
+        get_svc_run_args = ["sudo", "microk8s", "kubectl", "-n", f"{ops_test.model_name}", "get", "svc"]
         retcode, stdout, stderr = await ops_test.run(*get_svc_run_args)
         logger.error("=======================================================================")
         logger.error(stdout)
+        logger.error(stderr)
         logger.error("=======================================================================")
         if retcode != 0:
             raise RuntimeError(f"Error: {stderr}")
