@@ -24,6 +24,13 @@ class TestSDCoreBundle:
             idle_period=10,
             timeout=1500,
         )
+        get_svc_run_args = ["microk8s", "kubectl", "-n", f"{ops_test.model_name}", "get", "svc"]
+        retcode, stdout, stderr = await ops_test.run(*get_svc_run_args)
+        logger.error("=======================================================================")
+        logger.error(stdout)
+        logger.error("=======================================================================")
+        if retcode != 0:
+            raise RuntimeError(f"Error: {stderr}")
 
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
