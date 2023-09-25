@@ -39,7 +39,7 @@ jobs:
         uses: dacbd/create-issue-action@main
         with:
           token: ${{ github.token }}
-          title: [sdcore-tests] CI run failed
+          title: "[sdcore-tests] CI run failed"
           body: |
             ### Context
             [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
