@@ -74,13 +74,14 @@ class WebUI:
             imsis (list): List of IMSIs to be included in the device group
         """
         DEVICE_GROUP_CONFIG["imsis"] = imsis
-        url = f"http://{self.webui_ip}:5000/config/v1/device-group/{device_group_name}"
+        device_groups_api_url = f"http://{self.webui_ip}:5000/config/v1/device-group"
+        url = f"{device_groups_api_url}/{device_group_name}"
         response = requests.post(url, json=DEVICE_GROUP_CONFIG)
         response.raise_for_status()
         now = time.time()
         timeout = 5
         while time.time() - now <= timeout:
-            if requests.get(url).json():
+            if device_group_name in requests.get(device_groups_api_url).json():
                 logger.info(f"Created device group {device_group_name}.")
                 return
             else:
