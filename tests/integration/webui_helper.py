@@ -40,7 +40,7 @@ NETWORK_SLICE_CONFIG = {
         "site-name": "demo",
         "plmn": {"mcc": "208", "mnc": "93"},
         "gNodeBs": [{"name": "demo-gnb1", "tac": 1}],
-        "upf": {"upf-name": "upf", "upf-port": "8805"},
+        "upf": {"upf-name": "upf-external", "upf-port": "8805"},
     },
 }
 
