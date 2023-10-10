@@ -65,6 +65,9 @@ jobs:
 
           echo "# Install Juju"
           snap install juju --channel=3.1/stable
+          
+          echo "# Install juju-crashdump"
+          snap install --classic juju-crashdump
 
           echo "# Install charmcraft"
           snap install charmcraft --classic

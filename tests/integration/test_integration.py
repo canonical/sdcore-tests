@@ -43,11 +43,18 @@ class TestSDCoreBundle:
             ops_test: OpsTest
         """
         await self._deploy_sdcore_router(ops_test)
-        await ops_test.model.deploy(  # type: ignore[union-attr]
-            entity_url="https://charmhub.io/sdcore",
-            channel="latest/edge",
-            trust=True,
-        )
+
+        # TODO: Remove below workaround and uncomment the proper deployment once
+        #       https://github.com/charmed-kubernetes/pytest-operator/issues/116 is fixed.
+        deploy_sd_core_run_args = ["juju", "deploy", "sdcore", "--trust", "--channel=edge"]
+        retcode, stdout, stderr = await ops_test.run(*deploy_sd_core_run_args)
+        if retcode != 0:
+            raise RuntimeError(f"Error: {stderr}")
+        # await ops_test.model.deploy(  # type: ignore[union-attr]
+        #     entity_url="https://charmhub.io/sdcore",
+        #     channel="latest/edge",
+        #     trust=True,
+        # )
 
         await self._create_cross_model_relation(
             ops_test,
