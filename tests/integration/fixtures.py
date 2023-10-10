@@ -87,6 +87,8 @@ async def deploy_cos_lite(ops_test: OpsTest):
     )
 
     with ops_test.model_context(COS_MODEL_NAME):
+        # TODO: Remove below workaround and uncomment the proper deployment once
+        #       https://github.com/charmed-kubernetes/pytest-operator/issues/116 is fixed.
         deploy_cos_lite_run_args = ["juju", "deploy", "cos-lite", "--trust"]
         retcode, stdout, stderr = await ops_test.run(*deploy_cos_lite_run_args)
         if retcode != 0:
