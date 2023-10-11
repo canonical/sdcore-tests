@@ -11,9 +11,6 @@ jobs:
   start-runner:
     name: Start self-hosted EC2 runner
     runs-on: ubuntu-latest
-    outputs:
-      label: ${{ steps.start-ec2-runner.outputs.label }}
-      ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,11 +45,16 @@ jobs:
                 } 
               } 
             ]
+      - name: Set vars
+        id: set-vars
+        run: |
+          echo "LABEL=${{ steps.start-ec2-runner.outputs.label }}" >> "$GITHUB_OUTPUT"
+          echo "EC2_INSTANCE_ID=${{ steps.start-ec2-runner.outputs.ec2-instance-id }}" >> "$GITHUB_OUTPUT"
 
   integration-tests:
     name: Integration tests
     needs: start-runner
-    runs-on: ${{ needs.start-runner.outputs.label }}
+    runs-on: ${{ needs.start-runner.set-vars.outputs.LABEL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -122,5 +124,5 @@ jobs:
         with:
           mode: stop
           github-token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
-          label: ${{ needs.start-runner.outputs.label }}
-          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
+          label: ${{ needs.start-runner.set-vars.outputs.LABEL }}
+          ec2-instance-id: ${{ needs.start-runner.set-vars.outputs.EC2_INSTANCE_ID }}
