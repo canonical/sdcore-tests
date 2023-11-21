@@ -3,6 +3,7 @@
 # See LICENSE file for licensing details.
 
 import logging
+import random
 
 import pytest
 from fixtures import configure_sdcore, deploy_cos, deploy_gnbsim
@@ -35,6 +36,57 @@ class TestSDCoreBundle:
             action_uuid=start_simulation.entity_id, wait=300
         )
         assert action_output["success"] == "true"
+
+    @pytest.mark.abort_on_fail
+    async def test_chaos(self, ops_test: OpsTest, deploy_gnbsim):
+        gnbsim_unit = ops_test.model.units["gnbsim/0"]  # type: ignore[union-attr]
+
+        network_functions = [
+            "amf-0",
+            "ausf-0",
+            "nrf-0",
+            "nssf-0",
+            "pcf-0",
+            "smf-0",
+            "udm-0",
+            "udr-0",
+            "webui-0",
+        ]
+        successes = list()
+        while True:
+            nf = random.choice(network_functions)
+            logger.info("Chaos victim: %s", nf)
+            delete_pod = [
+                "microk8s.kubectl",
+                "delete",
+                "pod",
+                "-n",
+                ops_test.model.name,
+                nf,
+            ]
+            retcode, stdout, stderr = await ops_test.run(*delete_pod)
+            if retcode != 0:
+                raise RuntimeError(f"Error: {stderr}")
+
+            await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
+                apps=[*ops_test.model.applications],  # type: ignore[union-attr]
+                raise_on_error=False,
+                status="active",
+                idle_period=10,
+                timeout=1500,
+            )
+
+            start_simulation = await gnbsim_unit.run_action("start-simulation")
+            action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
+                action_uuid=start_simulation.entity_id, wait=300
+            )
+            if action_output.get("success", "false") != "true":
+                logger.error("Failed after deleting %s", nf)
+                logger.error("Successes:\n%s\n", successes)
+                system.exit(1)
+            else:
+                successes.append(nf)
+                logger.info("Successes so far:\n%s\n", successes)
 
     async def _deploy_sdcore(self, ops_test: OpsTest):
         """Deploys `sdcore` bundle.
