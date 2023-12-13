@@ -52,14 +52,14 @@ async def configure_sdcore(ops_test: OpsTest):
 @pytest.fixture(scope="module")
 @pytest.mark.abort_on_fail
 async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
-    """Deploys `sdcore-gnbsim`.
+    """Deploys `sdcore-gnbsim-k8s`.
 
     Args:
         ops_test: OpsTest
         configure_sdcore: `configure_sdcore` fixture
     """
     await ops_test.model.deploy(  # type: ignore[union-attr]
-        "sdcore-gnbsim",
+        "sdcore-gnbsim-k8s",
         application_name="gnbsim",
         channel="latest/edge",
         trust=True,

@@ -37,7 +37,7 @@ class TestSDCoreBundle:
         assert action_output["success"] == "true"
 
     async def _deploy_sdcore(self, ops_test: OpsTest):
-        """Deploys `sdcore` bundle.
+        """Deploys `sdcore-k8s` bundle.
 
         Args:
             ops_test: OpsTest
@@ -46,7 +46,7 @@ class TestSDCoreBundle:
 
         # TODO: Remove below workaround and uncomment the proper deployment once
         #       https://github.com/charmed-kubernetes/pytest-operator/issues/116 is fixed.
-        deploy_sd_core_run_args = ["juju", "deploy", "sdcore", "--trust", "--channel=edge"]
+        deploy_sd_core_run_args = ["juju", "deploy", "sdcore-k8s", "--trust", "--channel=edge"]
         retcode, stdout, stderr = await ops_test.run(*deploy_sd_core_run_args)
         if retcode != 0:
             raise RuntimeError(f"Error: {stderr}")
@@ -75,13 +75,13 @@ class TestSDCoreBundle:
 
     @staticmethod
     async def _deploy_sdcore_router(ops_test: OpsTest):
-        """Deploys `sdcore-router`.
+        """Deploys `sdcore-router-k8s`.
 
         Args:
             ops_test: OpsTest
         """
         await ops_test.model.deploy(  # type: ignore[union-attr]
-            "sdcore-router",
+            "sdcore-router-k8s",
             application_name="router",
             channel="latest/edge",
             trust=True,
