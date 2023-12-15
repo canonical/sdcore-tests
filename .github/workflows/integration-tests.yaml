@@ -97,7 +97,7 @@ jobs:
           su ubuntu -c "tox -vve integration"
       - name: Archive juju crashdump
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: juju-crashdump
           path: juju-crashdump-*.tar.xz
