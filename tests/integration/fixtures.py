@@ -52,14 +52,14 @@ async def configure_sdcore(ops_test: OpsTest):
 @pytest.fixture(scope="module")
 @pytest.mark.abort_on_fail
 async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
-    """Deploys `sdcore-gnbsim`.
+    """Deploys `sdcore-gnbsim-k8s`.
 
     Args:
         ops_test: OpsTest
         configure_sdcore: `configure_sdcore` fixture
     """
     await ops_test.model.deploy(  # type: ignore[union-attr]
-        "gnbsim-test",
+        "sdcore-gnbsim-k8s",
         application_name="gnbsim",
         channel="latest/edge",
         trust=True,
@@ -87,10 +87,16 @@ async def deploy_cos_lite(ops_test: OpsTest):
     )
 
     with ops_test.model_context(COS_MODEL_NAME):
-        await ops_test.model.deploy(  # type: ignore[union-attr]
-            entity_url="https://charmhub.io/cos-lite",
-            trust=True,
-        )
+        # TODO: Remove below workaround and uncomment the proper deployment once
+        #       https://github.com/charmed-kubernetes/pytest-operator/issues/116 is fixed.
+        deploy_cos_lite_run_args = ["juju", "deploy", "cos-lite", "--trust"]
+        retcode, stdout, stderr = await ops_test.run(*deploy_cos_lite_run_args)
+        if retcode != 0:
+            raise RuntimeError(f"Error: {stderr}")
+        # await ops_test.model.deploy(  # type: ignore[union-attr]
+        #     entity_url="https://charmhub.io/cos-lite",
+        #     trust=True,
+        # )
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
             apps=[*ops_test.model.applications],  # type: ignore[union-attr]
             raise_on_error=False,
