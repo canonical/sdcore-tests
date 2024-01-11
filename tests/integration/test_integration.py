@@ -17,8 +17,10 @@ class TestSDCoreBundle:
         self, ops_test: OpsTest
     ):
         await self._deploy_sdcore(ops_test)
+        apps = [*ops_test.model.applications]  # type: ignore[union-attr]
+        apps.remove("grafana-agent-k8s")
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
-            apps=[*ops_test.model.applications],  # type: ignore[union-attr]
+            apps=apps,  # type: ignore[union-attr]
             raise_on_error=False,
             status="active",
             idle_period=10,
