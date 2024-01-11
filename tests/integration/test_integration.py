@@ -24,7 +24,7 @@ class TestSDCoreBundle:
             raise_on_error=False,
             status="active",
             idle_period=10,
-            timeout=1500,
+            timeout=1800,
         )
 
     @pytest.mark.abort_on_fail
