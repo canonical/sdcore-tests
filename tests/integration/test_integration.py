@@ -16,6 +16,7 @@ class TestSDCoreBundle:
     async def test_given_sdcore_bundle_when_deploy_then_status_is_active(
         self, ops_test: OpsTest
     ):
+        await ops_test.model.set_config({"update-status-hook-interval": "1m"})
         await self._deploy_sdcore(ops_test)
         apps = [*ops_test.model.applications]  # type: ignore[union-attr]
         apps.remove("grafana-agent-k8s")
