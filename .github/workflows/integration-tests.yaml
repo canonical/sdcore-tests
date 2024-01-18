@@ -50,6 +50,7 @@ jobs:
           JUJU_MODEL_NO_PROXY="${no_proxy//::1,/},$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,.local,10.0.0.0/8,192.168.0.0/16,172.250.0.0/16"
           echo "JUJU_MODEL_NO_PROXY=$JUJU_MODEL_NO_PROXY"
           /usr/bin/sudo apt install -yqq libsctp-dev lksctp-tools
+          sudo /usr/sbin/iptables -I DOCKER-USER -j ACCEPT
           echo "================================================================================"
           checksctp
           sudo iptables-save
