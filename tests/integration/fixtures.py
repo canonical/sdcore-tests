@@ -8,9 +8,9 @@ from webui_helper import WebUI
 
 COS_MODEL_NAME = "cos-lite"
 GNBSIM_MODEL_NAME = "simulator"
-TEST_DEVICE_GROUP_NAME = "integration_tests"
+TEST_DEVICE_GROUP_NAME = "default-default"
 TEST_IMSI = "208930100007487"
-TEST_NETWORK_SLICE_NAME = "e2e"
+TEST_NETWORK_SLICE_NAME = "default"
 
 
 @pytest.fixture(scope="module")

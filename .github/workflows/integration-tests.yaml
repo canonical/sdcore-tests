@@ -52,6 +52,7 @@ jobs:
           /usr/bin/sudo apt install -yqq libsctp-dev lksctp-tools
           echo "================================================================================"
           checksctp
+          iptables-save
           echo "================================================================================"
 
           echo "# Bootstrap controller"
