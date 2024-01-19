@@ -86,7 +86,7 @@ class TestSDCoreBundle:
         await ops_test.model.deploy(  # type: ignore[union-attr]
             "sdcore-router-k8s",
             application_name="router",
-            channel="latest/edge",
+            channel="edge",
             trust=True,
         )
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
