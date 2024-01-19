@@ -9,19 +9,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-#      - name: NO_PROXY workaround
-#        run: |
-#          sudo sed -i "s#NO_PROXY.*#NO_PROXY=localhost,127.0.0.1,127.0.0.0/8,10.0.0.0/8,10.130.0.0/16,10.134.248.0/24,192.168.0.0/16,10.152.0.0/16,.jujucharms.com,.svc#g" /etc/environment
-#          sudo sed -i "s#no_proxy.*#no_proxy=localhost,127.0.0.1,127.0.0.0/8,10.0.0.0/8,10.130.0.0/16,10.134.248.0/24,192.168.0.0/16,10.152.0.0/16,.jujucharms.com,.svc#g" /etc/environment
       - name: Set Environment Variables
         uses: tw3lveparsecs/github-actions-setvars@v0.2
         with:
           varFilePath: ./.github/variables/dependencies_versions.env
       - name: Setup operator environment
         run: |
+          echo "# Setup iptables"
+          /usr/bin/sudo /usr/sbin/iptables -I DOCKER-USER -j ACCEPT
+          
           echo "# Install tox"
           /usr/bin/sudo apt update -yqq
-          /usr/bin/sudo apt install -yqq python3-pip
+          /usr/bin/sudo apt install -yqq python3-pip libsctp-dev
           /usr/bin/sudo --preserve-env=http_proxy,https_proxy,no_proxy pip3 install tox
 
           echo "# Install Juju"
@@ -42,19 +41,12 @@ jobs:
           /usr/bin/sg snap_microk8s -c "sudo microk8s enable hostpath-storage"
           /usr/bin/sg snap_microk8s -c "sudo microk8s enable metallb:10.1.1.1-10.1.1.254"
           
-          echo "# Get cluster subnets"
-          CLUSTER_CIDR=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-proxy | grep cluster-cidr | awk -F= '{ print $2 }'`
-          SERVICE_CLUSTER_IP_RANGE=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-apiserver | grep service-cluster-ip-range | awk -F= '{ print $2 }'`
-          NODE_INTERNAL_IP=`/usr/bin/sudo microk8s kubectl get nodes -o wide | awk '{ print $6 }' | awk 'END{print}'`
-          KUBERNETES_SERVICE_IP=`/usr/bin/sudo microk8s kubectl -n default get svc | awk '{ print $3 }' | awk 'END{print}'`
-          JUJU_MODEL_NO_PROXY="${no_proxy//::1,/},$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,.local,10.0.0.0/8,192.168.0.0/16,172.250.0.0/16"
-          echo "JUJU_MODEL_NO_PROXY=$JUJU_MODEL_NO_PROXY"
-          /usr/bin/sudo apt install -yqq libsctp-dev lksctp-tools
-          sudo /usr/sbin/iptables -I DOCKER-USER -j ACCEPT
-          echo "================================================================================"
-          checksctp
-          sudo iptables-save
-          echo "================================================================================"
+#          echo "# Get cluster subnets"
+#          CLUSTER_CIDR=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-proxy | grep cluster-cidr | awk -F= '{ print $2 }'`
+#          SERVICE_CLUSTER_IP_RANGE=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-apiserver | grep service-cluster-ip-range | awk -F= '{ print $2 }'`
+#          NODE_INTERNAL_IP=`/usr/bin/sudo microk8s kubectl get nodes -o wide | awk '{ print $6 }' | awk 'END{print}'`
+#          KUBERNETES_SERVICE_IP=`/usr/bin/sudo microk8s kubectl -n default get svc | awk '{ print $3 }' | awk 'END{print}'`
+#          JUJU_MODEL_NO_PROXY="${no_proxy//::1,/},$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,.local,10.0.0.0/8,192.168.0.0/16,172.250.0.0/16"
 
           echo "# Bootstrap controller"
           sleep 60  # Microk8s needs time to initialize properly
