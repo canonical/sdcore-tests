@@ -8,9 +8,20 @@ from webui_helper import WebUI
 
 COS_MODEL_NAME = "cos-lite"
 GNBSIM_MODEL_NAME = "simulator"
-TEST_DEVICE_GROUP_NAME = "integration_tests"
+TEST_DEVICE_GROUP_NAME = "default-default"
 TEST_IMSI = "208930100007487"
-TEST_NETWORK_SLICE_NAME = "e2e"
+TEST_NETWORK_SLICE_NAME = "default"
+
+
+@pytest.fixture(scope="module")
+@pytest.mark.abort_on_fail
+async def setup(ops_test: OpsTest):
+    """Sets the interval for the `update-status` hook to 1 minute.
+
+    Args:
+        ops_test: OpsTest
+    """
+    await ops_test.model.set_config({"update-status-hook-interval": "1m"})  # type: ignore[union-attr]  # noqa: E501
 
 
 @pytest.fixture(scope="module")
