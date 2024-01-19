@@ -9,14 +9,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      #      - name: NO_PROXY workaround
-      #        run: |
-      #          sudo sed -i "s#NO_PROXY.*#NO_PROXY=localhost,127.0.0.1,127.0.0.0/8,10.0.0.0/8,10.130.0.0/16,10.134.248.0/24,192.168.0.0/16,10.152.0.0/16,.jujucharms.com,.svc#g" /etc/environment
-      #          sudo sed -i "s#no_proxy.*#no_proxy=localhost,127.0.0.1,127.0.0.0/8,10.0.0.0/8,10.130.0.0/16,10.134.248.0/24,192.168.0.0/16,10.152.0.0/16,.jujucharms.com,.svc#g" /etc/environment
+
       - name: Set Environment Variables
         uses: tw3lveparsecs/github-actions-setvars@v0.2
         with:
           varFilePath: ./.github/variables/dependencies_versions.env
+
       - name: Setup operator environment
         run: |
           echo "# Setup iptables"
@@ -64,6 +62,7 @@ jobs:
           sudo microk8s enable multus
           sudo microk8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
           sudo microk8s kubectl auth can-i create network-attachment-definitions
+
       - name: Run integration tests
         run: tox -vve integration
 
