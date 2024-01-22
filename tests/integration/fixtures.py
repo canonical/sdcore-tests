@@ -2,9 +2,13 @@
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+import logging
 import pytest
 from pytest_operator.plugin import OpsTest
 from webui_helper import WebUI
+
+logger = logging.getLogger(__name__)
+
 
 COS_MODEL_NAME = "cos-lite"
 GNBSIM_MODEL_NAME = "simulator"
@@ -98,6 +102,9 @@ async def deploy_cos_lite(ops_test: OpsTest):
     )
 
     with ops_test.model_context(COS_MODEL_NAME):
+        get_model_config = ["juju", "model-config"]
+        _, stdout, _ = await ops_test.run(*get_model_config)
+        logger.error(f"COS model config: \n{stdout}")
         # TODO: Remove below workaround and uncomment the proper deployment once
         #       https://github.com/charmed-kubernetes/pytest-operator/issues/116 is fixed.
         deploy_cos_lite_run_args = ["juju", "deploy", "cos-lite", "--trust"]
