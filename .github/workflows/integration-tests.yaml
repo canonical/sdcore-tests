@@ -17,6 +17,9 @@ jobs:
 
       - name: Setup operator environment
         run: |
+          echo "================================================================================="
+          env
+          echo "================================================================================="
           echo "# Setup iptables"
           /usr/bin/sudo /usr/sbin/iptables -I DOCKER-USER -j ACCEPT
           
