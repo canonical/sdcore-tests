@@ -46,7 +46,7 @@ class TestSDCoreBundle:
 
         # TODO: Remove below workaround and uncomment the proper deployment once
         #       https://github.com/charmed-kubernetes/pytest-operator/issues/116 is fixed.
-        deploy_sd_core_run_args = ["juju", "deploy", "sdcore-k8s", "--trust", "--channel=edge"]
+        deploy_sd_core_run_args = ["juju", "deploy", "sdcore-k8s", "--trust", "--channel=1.3/edge"]
         retcode, stdout, stderr = await ops_test.run(*deploy_sd_core_run_args)
         if retcode != 0:
             raise RuntimeError(f"Error: {stderr}")
@@ -83,7 +83,7 @@ class TestSDCoreBundle:
         await ops_test.model.deploy(  # type: ignore[union-attr]
             "sdcore-router-k8s",
             application_name="router",
-            channel="latest/edge",
+            channel="1.3/edge",
             trust=True,
         )
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]

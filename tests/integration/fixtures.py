@@ -61,7 +61,7 @@ async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
     await ops_test.model.deploy(  # type: ignore[union-attr]
         "sdcore-gnbsim-k8s",
         application_name="gnbsim",
-        channel="latest/edge",
+        channel="1.3/edge",
         trust=True,
     )
     await ops_test.model.add_relation("gnbsim:fiveg-n2", "amf:fiveg-n2")  # type: ignore[union-attr]  # noqa: E501
