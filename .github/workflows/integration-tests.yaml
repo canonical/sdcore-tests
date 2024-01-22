@@ -16,47 +16,12 @@ jobs:
           varFilePath: ./.github/variables/dependencies_versions.env
 
       - name: Setup operator environment
-        run: |
-          echo "================================================================================="
-          env
-          echo "================================================================================="
-          echo "# Setup iptables"
-          /usr/bin/sudo /usr/sbin/iptables -I DOCKER-USER -j ACCEPT
-          
-          echo "# Install tox"
-          /usr/bin/sudo apt update -yqq
-          /usr/bin/sudo apt install -yqq python3-pip libsctp-dev
-          /usr/bin/sudo --preserve-env=http_proxy,https_proxy,no_proxy pip3 install tox
-
-          echo "# Install microk8s"
-          /usr/bin/sudo snap install microk8s --channel=$MICROK8S_VERSION
-
-          echo "# Initialize microk8s"
-          /usr/bin/bash -c "sudo usermod -a -G snap_microk8s $USER"
-          /usr/bin/sg snap_microk8s -c "microk8s status --wait-ready"
-          /usr/bin/sg snap_microk8s -c "sudo microk8s enable hostpath-storage"
-          /usr/bin/sg snap_microk8s -c "sudo microk8s enable metallb:10.0.0.2-10.0.0.10"
-          
-          echo "# Get cluster subnets"
-          CLUSTER_CIDR=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-proxy | grep cluster-cidr | awk -F= '{ print $2 }'`
-          SERVICE_CLUSTER_IP_RANGE=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-apiserver | grep service-cluster-ip-range | awk -F= '{ print $2 }'`
-          NODE_INTERNAL_IP=`/usr/bin/sudo microk8s kubectl get nodes -o wide | awk '{ print $6 }' | awk 'END{print}'`
-          KUBERNETES_SERVICE_IP=`/usr/bin/sudo microk8s kubectl -n default get svc | awk '{ print $3 }' | awk 'END{print}'`
-          JUJU_MODEL_NO_PROXY="${no_proxy//::1,/},$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,.local"
-          
-          echo "# Install Juju"
-          /usr/bin/sudo snap install juju --classic --channel=$JUJU_VERSION
-
-          echo "# Install juju-crashdump"
-          /usr/bin/sudo snap install juju-crashdump --classic --channel=latest
-
-          echo "# Install charmcraft"
-          /usr/bin/sudo snap install charmcraft --classic
-          
-          echo "# Bootstrap controller"
-          sleep 60  # Microk8s needs time to initialize properly
-          /usr/bin/sg snap_microk8s -c "mkdir -p /home/ubuntu/.local/share"
-          /usr/bin/sg snap_microk8s -c "juju bootstrap --debug --verbose microk8s integration-tests-$GITHUB_RUN_ID --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG' --model-default http-proxy=$HTTP_PROXY --model-default https-proxy=$HTTPS_PROXY --model-default no-proxy=$JUJU_MODEL_NO_PROXY --model-default juju-no-proxy=$JUJU_MODEL_NO_PROXY"
+        uses: charmed-kubernetes/actions-operator@main
+        with:
+          juju-channel: 3.1/stable
+          provider: microk8s
+          channel: 1.27-strict/stable
+          microk8s-addons: "hostpath-storage dns metallb:10.0.0.2-10.0.0.10"
 
       - name: Enable Multus addon
         continue-on-error: true
@@ -65,6 +30,54 @@ jobs:
           sudo microk8s enable multus
           sudo microk8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
           sudo microk8s kubectl auth can-i create network-attachment-definitions
+
+      - name: Setup environment
+        run: |
+          echo "# Setup iptables"
+          /usr/bin/sudo /usr/sbin/iptables -I DOCKER-USER -j ACCEPT
+          
+#          echo "# Install tox"
+#          /usr/bin/sudo apt update -yqq
+#          /usr/bin/sudo apt install -yqq python3-pip libsctp-dev
+#          /usr/bin/sudo --preserve-env=http_proxy,https_proxy,no_proxy pip3 install tox
+#
+#          echo "# Install microk8s"
+#          /usr/bin/sudo snap install microk8s --channel=$MICROK8S_VERSION
+#
+#          echo "# Initialize microk8s"
+#          /usr/bin/bash -c "sudo usermod -a -G snap_microk8s $USER"
+#          /usr/bin/sg snap_microk8s -c "microk8s status --wait-ready"
+#          /usr/bin/sg snap_microk8s -c "sudo microk8s enable hostpath-storage"
+#          /usr/bin/sg snap_microk8s -c "sudo microk8s enable metallb:10.0.0.2-10.0.0.10"
+#
+#          echo "# Get cluster subnets"
+#          CLUSTER_CIDR=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-proxy | grep cluster-cidr | awk -F= '{ print $2 }'`
+#          SERVICE_CLUSTER_IP_RANGE=`/usr/bin/sudo cat /var/snap/microk8s/current/args/kube-apiserver | grep service-cluster-ip-range | awk -F= '{ print $2 }'`
+#          NODE_INTERNAL_IP=`/usr/bin/sudo microk8s kubectl get nodes -o wide | awk '{ print $6 }' | awk 'END{print}'`
+#          KUBERNETES_SERVICE_IP=`/usr/bin/sudo microk8s kubectl -n default get svc | awk '{ print $3 }' | awk 'END{print}'`
+#          JUJU_MODEL_NO_PROXY="${no_proxy//::1,/},$CLUSTER_CIDR,$SERVICE_CLUSTER_IP_RANGE,$NODE_INTERNAL_IP,$KUBERNETES_SERVICE_IP,.local"
+#
+#          echo "# Install Juju"
+#          /usr/bin/sudo snap install juju --classic --channel=$JUJU_VERSION
+#
+#          echo "# Install juju-crashdump"
+#          /usr/bin/sudo snap install juju-crashdump --classic --channel=latest
+#
+#          echo "# Install charmcraft"
+#          /usr/bin/sudo snap install charmcraft --classic
+#
+#          echo "# Bootstrap controller"
+#          sleep 60  # Microk8s needs time to initialize properly
+#          /usr/bin/sg snap_microk8s -c "mkdir -p /home/ubuntu/.local/share"
+#          /usr/bin/sg snap_microk8s -c "juju bootstrap --debug --verbose microk8s integration-tests-$GITHUB_RUN_ID --model-default test-mode=true --model-default automatically-retry-hooks=true --model-default logging-config='<root>=DEBUG' --model-default http-proxy=$HTTP_PROXY --model-default https-proxy=$HTTPS_PROXY --model-default no-proxy=$JUJU_MODEL_NO_PROXY --model-default juju-no-proxy=$JUJU_MODEL_NO_PROXY"
+#
+#      - name: Enable Multus addon
+#        continue-on-error: true
+#        run: |
+#          sudo microk8s addons repo add community https://github.com/canonical/microk8s-community-addons --reference feat/strict-fix-multus
+#          sudo microk8s enable multus
+#          sudo microk8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
+#          sudo microk8s kubectl auth can-i create network-attachment-definitions
 
       - name: Run integration tests
         run: tox -vve integration
