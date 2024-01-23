@@ -29,6 +29,7 @@ DEVICE_GROUP_CONFIG = {
         "ue-dnn-qos": {
             "dnn-mbr-uplink": 200000000,
             "dnn-mbr-downlink": 200000000,
+            "bitrate-unit": "bps",
             "traffic-class": {"name": "platinum", "arp": 6, "pdb": 300, "pelr": 6, "qci": 8},
         },
     },
