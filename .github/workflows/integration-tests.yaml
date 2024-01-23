@@ -10,11 +10,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set Environment Variables
-        uses: tw3lveparsecs/github-actions-setvars@v0.2
-        with:
-          varFilePath: ./.github/variables/dependencies_versions.env
-
       - name: Setup operator environment
         uses: charmed-kubernetes/actions-operator@main
         with:
@@ -30,11 +25,6 @@ jobs:
           sudo microk8s enable multus
           sudo microk8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
           sudo microk8s kubectl auth can-i create network-attachment-definitions
-
-#      - name: Setup environment
-#        run: |
-#          echo "# Setup iptables"
-#          /usr/bin/sudo /usr/sbin/iptables -I DOCKER-USER -j ACCEPT
 
       - name: Run integration tests
         run: tox -vve integration
