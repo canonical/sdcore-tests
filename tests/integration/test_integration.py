@@ -5,7 +5,7 @@
 import logging
 
 import pytest
-from fixtures import configure_sdcore, deploy_gnbsim, setup
+from fixtures import configure_sdcore, deploy_cos, deploy_gnbsim, setup
 from pytest_operator.plugin import OpsTest
 
 logger = logging.getLogger(__name__)
@@ -14,13 +14,11 @@ logger = logging.getLogger(__name__)
 class TestSDCoreBundle:
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_bundle_when_deploy_then_status_is_active(
-        self, ops_test: OpsTest, setup
+        self, ops_test: OpsTest, setup, deploy_cos
     ):
         await self._deploy_sdcore(ops_test)
-        apps = [*ops_test.model.applications]  # type: ignore[union-attr]
-        apps.remove("grafana-agent-k8s")
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
-            apps=apps,
+            apps=[*ops_test.model.applications],  # type: ignore[union-attr]
             raise_on_error=False,
             status="active",
             idle_period=10,
@@ -58,22 +56,22 @@ class TestSDCoreBundle:
         #     trust=True,
         # )
 
-        # await self._create_cross_model_relation(
-        #     ops_test,
-        #     provider_model="cos-lite",
-        #     offer_name="prometheus",
-        #     provider_relation_name="receive-remote-write",
-        #     requirer_app="grafana-agent-k8s",
-        #     requirer_relation_name="send-remote-write",
-        # )
-        # await self._create_cross_model_relation(
-        #     ops_test,
-        #     provider_model="cos-lite",
-        #     offer_name="loki",
-        #     provider_relation_name="logging",
-        #     requirer_app="grafana-agent-k8s",
-        #     requirer_relation_name="logging-consumer",
-        # )
+        await self._create_cross_model_relation(
+            ops_test,
+            provider_model="cos-lite",
+            offer_name="prometheus",
+            provider_relation_name="receive-remote-write",
+            requirer_app="grafana-agent-k8s",
+            requirer_relation_name="send-remote-write",
+        )
+        await self._create_cross_model_relation(
+            ops_test,
+            provider_model="cos-lite",
+            offer_name="loki",
+            provider_relation_name="logging",
+            requirer_app="grafana-agent-k8s",
+            requirer_relation_name="logging-consumer",
+        )
 
     @staticmethod
     async def _deploy_sdcore_router(ops_test: OpsTest):
