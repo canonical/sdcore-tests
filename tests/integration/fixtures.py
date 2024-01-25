@@ -36,8 +36,8 @@ async def deploy_cos(ops_test: OpsTest):
     Args:
         ops_test: OpsTest
     """
-    await deploy_cos_lite(ops_test)
-    await deploy_cos_configuration(ops_test)
+    await _deploy_cos_lite(ops_test)
+    await _deploy_cos_configuration(ops_test)
 
 
 @pytest.fixture(scope="module")
@@ -53,7 +53,7 @@ async def configure_sdcore(ops_test: OpsTest):
     Args:
         ops_test: OpsTest
     """
-    webui_ip_address = await get_unit_address(ops_test, "webui", 0)
+    webui_ip_address = await _get_unit_address(ops_test, "webui", 0)
     webui_client = WebUI(webui_ip_address)
     webui_client.create_subscriber(TEST_IMSI)
     webui_client.create_device_group(TEST_DEVICE_GROUP_NAME, [TEST_IMSI])
@@ -76,6 +76,7 @@ async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
         trust=True,
     )
     await ops_test.model.add_relation("gnbsim:fiveg-n2", "amf:fiveg-n2")  # type: ignore[union-attr]  # noqa: E501
+    await ops_test.model.add_relation("gnbsim:fiveg_gnb_identity", "nms:fiveg_gnb_identity")  # type: ignore[union-attr]  # noqa: E501
     await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
         apps=["gnbsim"],
         raise_on_error=False,
@@ -85,7 +86,21 @@ async def deploy_gnbsim(ops_test: OpsTest, configure_sdcore):
     )
 
 
-async def deploy_cos_lite(ops_test: OpsTest):
+@pytest.fixture(scope="module")
+@pytest.mark.abort_on_fail
+async def configure_traefik_external_hostname(ops_test: OpsTest) -> None:
+    """Configures external hostname for Traefik charm using its external IP and nip.io.
+
+    Args:
+        ops_test: OpsTest
+    """
+    traefik_public_address = await _get_application_public_address(ops_test, "traefik-k8s")
+    await ops_test.model.applications["traefik-k8s"].set_config(  # type: ignore[union-attr]
+        {"external_hostname": f"{traefik_public_address}.nip.io"}
+    )
+
+
+async def _deploy_cos_lite(ops_test: OpsTest):
     """Deploys `cos-lite` bundle.
 
     Args:
@@ -129,7 +144,7 @@ async def deploy_cos_lite(ops_test: OpsTest):
         )
 
 
-async def deploy_cos_configuration(ops_test: OpsTest):
+async def _deploy_cos_configuration(ops_test: OpsTest):
     """Deploys `cos-configuration-k8s` charm.
 
     Args:
@@ -154,7 +169,22 @@ async def deploy_cos_configuration(ops_test: OpsTest):
         )
 
 
-async def get_unit_address(ops_test: OpsTest, app_name: str, unit_num: int) -> str:
+async def _get_application_public_address(ops_test: OpsTest, app_name: str) -> str:
+    """Find public address for any application.
+
+    Args:
+        ops_test: OpsTest
+        app_name: String name of an application
+
+    Returns:
+        str: Application's public address
+    """
+    status = await ops_test.model.get_status()  # type: ignore[union-attr]
+    app = status["applications"][app_name]
+    return app.public_address
+
+
+async def _get_unit_address(ops_test: OpsTest, app_name: str, unit_num: int) -> str:
     """Get unit's IP address for any application.
 
     Args:

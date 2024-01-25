@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
-
+import json
 import logging
+from typing import Tuple
 
 import pytest
-from fixtures import configure_sdcore, deploy_cos, deploy_gnbsim, setup
+import requests
+from fixtures import (
+    COS_MODEL_NAME,
+    configure_sdcore,
+    configure_traefik_external_hostname,
+    deploy_cos,
+    deploy_gnbsim,
+    setup,
+)
 from pytest_operator.plugin import OpsTest
+from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +45,29 @@ class TestSDCoreBundle:
             action_uuid=start_simulation.entity_id, wait=300
         )
         assert action_output["success"] == "true"
+
+    @pytest.mark.abort_on_fail
+    async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
+        self, ops_test: OpsTest, configure_traefik_external_hostname
+    ):
+        nms_url = await self._get_nms_url(ops_test)
+        network_configuration_resp = requests.get(f"{nms_url}/network-configuration")
+        network_configuration_resp.raise_for_status()
+        subscribers_resp = requests.get(f"{nms_url}/subscribers")
+        subscribers_resp.raise_for_status()
+
+    @pytest.mark.abort_on_fail
+    async def test_given_cos_lite_integrated_with_sdcore_when_searching_for_5g_network_overview_dashboard_in_grafana_then_dashboard_exists(  # noqa: E501
+        self, ops_test: OpsTest
+    ):
+        dashboard_name = "5G Network Overview"
+        grafana_url, grafana_passwd = await self._get_grafana_url_and_admin_password(ops_test)
+        network_overview_dashboard_query = "%20".join(dashboard_name.split())
+        request_url = f"{grafana_url}/api/search?query={network_overview_dashboard_query}"
+        resp = requests.get(
+            url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
+        )
+        resp.raise_for_status()
 
     async def _deploy_sdcore(self, ops_test: OpsTest):
         """Deploys `sdcore-k8s` bundle.
@@ -123,3 +156,40 @@ class TestSDCoreBundle:
         await ops_test.model.add_relation(  # type: ignore[union-attr]
             f"{offer_name}:{provider_relation_name}", f"{requirer_app}:{requirer_relation_name}"
         )
+
+    @staticmethod
+    async def _get_nms_url(ops_test: OpsTest) -> str:
+        """Gets the URL of the SD-Core NMS application from Traefik.
+
+        Args:
+            ops_test: OpsTest
+
+        Returns:
+            str: URL of the SD-Core NMS application
+        """
+        traefik_unit = ops_test.model.units["traefik-k8s/0"]  # type: ignore[union-attr]
+        show_endpoints = await traefik_unit.run_action("show-proxied-endpoints")
+        action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
+            action_uuid=show_endpoints.entity_id, wait=300
+        )
+        proxied_endpoints = json.loads(action_output["proxied-endpoints"])
+        return proxied_endpoints["nms"]["url"]
+
+    @staticmethod
+    async def _get_grafana_url_and_admin_password(ops_test: OpsTest) -> Tuple[str, str]:
+        """Gets Grafana URL and admin password.
+
+        Args:
+            ops_test: OpsTest
+
+        Returns:
+            str: Grafana URL
+            str: Grafana admin password
+        """
+        with ops_test.model_context(COS_MODEL_NAME):
+            grafana_unit = ops_test.model.units["grafana/0"]  # type: ignore[union-attr]
+            get_admin_password = await grafana_unit.run_action("get-admin-password")
+            action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
+                action_uuid=get_admin_password.entity_id, wait=300
+            )
+        return action_output["url"], action_output["admin-password"]
