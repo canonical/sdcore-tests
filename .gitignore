@@ -10,3 +10,6 @@
 
 # Charmcraft
 *.charm
+
+.terraform/
+.terraform.lock.hcl
