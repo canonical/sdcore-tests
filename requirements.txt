@@ -2,7 +2,7 @@ black
 flake8-docstrings
 flake8-builtins
 isort
-juju
+juju==3.3.0.0
 mypy
 pep8-naming
 pyproject-flake8
