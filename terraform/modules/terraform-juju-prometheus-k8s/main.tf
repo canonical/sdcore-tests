@@ -2,11 +2,11 @@
 # See LICENSE file for licensing details.
 
 resource "juju_application" "prometheus" {
-  name = var.app_name
+  name  = var.app_name
   model = var.model_name
 
   charm {
-    name = "prometheus-k8s"
+    name    = "prometheus-k8s"
     channel = var.channel
   }
 

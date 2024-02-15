@@ -9,66 +9,66 @@ module "alertmanager" {
   source = "../terraform-juju-alertmanager-k8s"
 
   model_name = juju_model.cos.name
-  app_name = var.alertmanager_app_name
-  channel = var.alertmanager_channel
+  app_name   = var.alertmanager_app_name
+  channel    = var.alertmanager_channel
 }
 
 module "catalogue" {
   source = "../terraform-juju-catalogue-k8s"
 
   model_name = juju_model.cos.name
-  app_name = var.catalogue_app_name
-  channel = var.catalogue_channel
+  app_name   = var.catalogue_app_name
+  channel    = var.catalogue_channel
 }
 
 module "cos-configuration" {
-  count = var.deploy_cos_configuration ? 1 : 0
+  count  = var.deploy_cos_configuration ? 1 : 0
   source = "../terraform-juju-cos-configuration-k8s"
 
   model_name = juju_model.cos.name
-  app_name = var.cos_configuration_app_name
-  channel = var.cos_configuration_channel
+  app_name   = var.cos_configuration_app_name
+  channel    = var.cos_configuration_channel
 
-  git_repo = var.git_repo
-  git_branch = var.git_branch
-  git_rev = var.git_rev
-  git_depth = var.git_depth
-  git_ssh_key = var.git_ssh_key
+  git_repo                    = var.git_repo
+  git_branch                  = var.git_branch
+  git_rev                     = var.git_rev
+  git_depth                   = var.git_depth
+  git_ssh_key                 = var.git_ssh_key
   prometheus_alert_rules_path = var.prometheus_alert_rules_path
-  loki_alert_rules_path = var.loki_alert_rules_path
-  grafana_dashboards_path = var.grafana_dashboards_path
+  loki_alert_rules_path       = var.loki_alert_rules_path
+  grafana_dashboards_path     = var.grafana_dashboards_path
 }
 
 module "grafana" {
   source = "../terraform-juju-grafana-k8s"
 
   model_name = juju_model.cos.name
-  app_name = var.grafana_app_name
-  channel = var.grafana_channel
+  app_name   = var.grafana_app_name
+  channel    = var.grafana_channel
 }
 
 module "loki" {
   source = "../terraform-juju-loki-k8s"
 
   model_name = juju_model.cos.name
-  app_name = var.loki_app_name
-  channel = var.loki_channel
+  app_name   = var.loki_app_name
+  channel    = var.loki_channel
 }
 
 module "prometheus" {
   source = "../terraform-juju-prometheus-k8s"
 
   model_name = juju_model.cos.name
-  app_name = var.prometheus_app_name
-  channel = var. prometheus_channel
+  app_name   = var.prometheus_app_name
+  channel    = var.prometheus_channel
 }
 
 module "traefik" {
   source = "../terraform-juju-traefik-k8s"
 
   model_name = juju_model.cos.name
-  app_name = var.traefik_app_name
-  channel = var.traefik_channel
+  app_name   = var.traefik_app_name
+  channel    = var.traefik_channel
 }
 
 # Provided by Alertmanager

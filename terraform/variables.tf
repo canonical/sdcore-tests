@@ -7,6 +7,12 @@ variable "sdcore_model_name" {
   default     = "core"
 }
 
+variable "cos_model_name" {
+  description = "Name of Juju model to deploy application to."
+  type        = string
+  default     = "cos"
+}
+
 variable "channel" {
   description = "The channel to use when deploying a charm."
   type        = string

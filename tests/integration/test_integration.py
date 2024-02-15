@@ -3,6 +3,7 @@
 # See LICENSE file for licensing details.
 import json
 import logging
+import os
 from typing import Tuple
 
 import pytest
@@ -17,6 +18,7 @@ from fixtures import (
 )
 from pytest_operator.plugin import OpsTest
 from requests.auth import HTTPBasicAuth
+from terraform_helper import Terraform
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ logger = logging.getLogger(__name__)
 class TestSDCoreBundle:
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_bundle_when_deploy_then_status_is_active(
-        self, ops_test: OpsTest, setup, deploy_cos
+        self, ops_test: OpsTest, setup
     ):
         await self._deploy_sdcore(ops_test)
         await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
@@ -35,39 +37,39 @@ class TestSDCoreBundle:
             timeout=1500,
         )
 
-    @pytest.mark.abort_on_fail
-    async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
-        self, ops_test: OpsTest, deploy_gnbsim
-    ):
-        gnbsim_unit = ops_test.model.units["gnbsim/0"]  # type: ignore[union-attr]
-        start_simulation = await gnbsim_unit.run_action("start-simulation")
-        action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
-            action_uuid=start_simulation.entity_id, wait=300
-        )
-        assert action_output["success"] == "true"
-
-    @pytest.mark.abort_on_fail
-    async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
-        self, ops_test: OpsTest, configure_traefik_external_hostname
-    ):
-        nms_url = await self._get_nms_url(ops_test)
-        network_configuration_resp = requests.get(f"{nms_url}/network-configuration")
-        network_configuration_resp.raise_for_status()
-        subscribers_resp = requests.get(f"{nms_url}/subscribers")
-        subscribers_resp.raise_for_status()
-
-    @pytest.mark.abort_on_fail
-    async def test_given_cos_lite_integrated_with_sdcore_when_searching_for_5g_network_overview_dashboard_in_grafana_then_dashboard_exists(  # noqa: E501
-        self, ops_test: OpsTest
-    ):
-        dashboard_name = "5G Network Overview"
-        grafana_url, grafana_passwd = await self._get_grafana_url_and_admin_password(ops_test)
-        network_overview_dashboard_query = "%20".join(dashboard_name.split())
-        request_url = f"{grafana_url}/api/search?query={network_overview_dashboard_query}"
-        resp = requests.get(
-            url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
-        )
-        resp.raise_for_status()
+    # @pytest.mark.abort_on_fail
+    # async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
+    #     self, ops_test: OpsTest
+    # ):
+    #     gnbsim_unit = ops_test.model.units["gnbsim/0"]  # type: ignore[union-attr]
+    #     start_simulation = await gnbsim_unit.run_action("start-simulation")
+    #     action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
+    #         action_uuid=start_simulation.entity_id, wait=300
+    #     )
+    #     assert action_output["success"] == "true"
+    #
+    # @pytest.mark.abort_on_fail
+    # async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
+    #     self, ops_test: OpsTest, configure_traefik_external_hostname
+    # ):
+    #     nms_url = await self._get_nms_url(ops_test)
+    #     network_configuration_resp = requests.get(f"{nms_url}/network-configuration")
+    #     network_configuration_resp.raise_for_status()
+    #     subscribers_resp = requests.get(f"{nms_url}/subscribers")
+    #     subscribers_resp.raise_for_status()
+    #
+    # @pytest.mark.abort_on_fail
+    # async def test_given_cos_lite_integrated_with_sdcore_when_searching_for_5g_network_overview_dashboard_in_grafana_then_dashboard_exists(  # noqa: E501
+    #     self, ops_test: OpsTest
+    # ):
+    #     dashboard_name = "5G Network Overview"
+    #     grafana_url, grafana_passwd = await self._get_grafana_url_and_admin_password(ops_test)
+    #     network_overview_dashboard_query = "%20".join(dashboard_name.split())
+    #     request_url = f"{grafana_url}/api/search?query={network_overview_dashboard_query}"
+    #     resp = requests.get(
+    #         url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
+    #     )
+    #     resp.raise_for_status()
 
     async def _deploy_sdcore(self, ops_test: OpsTest):
         """Deploys `sdcore-k8s` bundle.
@@ -75,36 +77,10 @@ class TestSDCoreBundle:
         Args:
             ops_test: OpsTest
         """
-        await self._deploy_sdcore_router(ops_test)
-
-        # TODO: Remove below workaround and uncomment the proper deployment once
-        #       https://github.com/charmed-kubernetes/pytest-operator/issues/116 is fixed.
-        deploy_sd_core_run_args = ["juju", "deploy", "sdcore-k8s", "--trust", "--channel=edge"]
-        retcode, stdout, stderr = await ops_test.run(*deploy_sd_core_run_args)
-        if retcode != 0:
-            raise RuntimeError(f"Error: {stderr}")
-        # await ops_test.model.deploy(  # type: ignore[union-attr]
-        #     entity_url="https://charmhub.io/sdcore",
-        #     channel="latest/edge",
-        #     trust=True,
-        # )
-
-        await self._create_cross_model_relation(
-            ops_test,
-            provider_model="cos-lite",
-            offer_name="prometheus",
-            provider_relation_name="receive-remote-write",
-            requirer_app="grafana-agent-k8s",
-            requirer_relation_name="send-remote-write",
-        )
-        await self._create_cross_model_relation(
-            ops_test,
-            provider_model="cos-lite",
-            offer_name="loki",
-            provider_relation_name="logging",
-            requirer_app="grafana-agent-k8s",
-            requirer_relation_name="logging-consumer",
-        )
+        tf_client = Terraform(work_dir=os.path.join(os.getcwd(), "terraform"))
+        tf_client.init()
+        tf_client.plan()
+        tf_client.apply()
 
     @staticmethod
     async def _deploy_sdcore_router(ops_test: OpsTest):

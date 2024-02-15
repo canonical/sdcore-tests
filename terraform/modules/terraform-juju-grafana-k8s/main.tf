@@ -2,11 +2,11 @@
 # See LICENSE file for licensing details.
 
 resource "juju_application" "grafana" {
-  name = var.app_name
+  name  = var.app_name
   model = var.model_name
 
   charm {
-    name = "grafana-k8s"
+    name    = "grafana-k8s"
     channel = var.channel
   }
 

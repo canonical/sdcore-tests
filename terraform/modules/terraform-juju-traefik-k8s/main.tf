@@ -2,11 +2,11 @@
 # See LICENSE file for licensing details.
 
 resource "juju_application" "traefik" {
-  name = var.app_name
+  name  = var.app_name
   model = var.model_name
 
   charm {
-    name = "traefik-k8s"
+    name    = "traefik-k8s"
     channel = var.channel
   }
 

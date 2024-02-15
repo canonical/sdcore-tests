@@ -2,11 +2,11 @@
 # See LICENSE file for licensing details.
 
 resource "juju_application" "alertmanager" {
-  name = var.app_name
+  name  = var.app_name
   model = var.model_name
 
   charm {
-    name = "alertmanager-k8s"
+    name    = "alertmanager-k8s"
     channel = var.channel
   }
 
