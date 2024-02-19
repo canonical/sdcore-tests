@@ -14,30 +14,30 @@ module "cos-lite" {
   grafana_dashboards_path  = "grafana_dashboards/sdcore/"
 }
 
-module "sdcore-router" {
-  source = "git::https://github.com/canonical/sdcore-router-k8s-operator//terraform"
+#module "sdcore-router" {
+#  source = "git::https://github.com/canonical/sdcore-router-k8s-operator//terraform"
+#
+#  model_name = juju_model.sdcore.name
+##  channel    = var.channel
+#}
+
+module "sdcore" {
+  source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-k8s"
 
   model_name = juju_model.sdcore.name
-#  channel    = var.channel
+  channel    = var.channel
+
+  depends_on = [juju_model.sdcore]
 }
 
-#module "sdcore" {
-#  source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-k8s"
+#module "gnbsim" {
+#  source = "git::https://github.com/canonical/sdcore-gnbsim-k8s-operator//terraform"
 #
 #  model_name = juju_model.sdcore.name
 ##  channel    = var.channel
 #
 #  depends_on = [module.sdcore-router]
 #}
-
-module "gnbsim" {
-  source = "git::https://github.com/canonical/sdcore-gnbsim-k8s-operator//terraform"
-
-  model_name = juju_model.sdcore.name
-#  channel    = var.channel
-
-  depends_on = [module.sdcore-router]
-}
 
 #resource "juju_integration" "gnbsim-amf" {
 #  model = juju_model.sdcore.name
@@ -69,16 +69,16 @@ module "gnbsim" {
 #
 # Cross-model integrations
 
-resource "juju_offer" "prometheus-remote-write" {
-  model            = module.cos-lite.model_name
-  application_name = module.cos-lite.prometheus_app_name
-  endpoint         = "receive-remote-write"
-}
-resource "juju_offer" "loki-logging" {
-  model            = module.cos-lite.model_name
-  application_name = module.cos-lite.loki_app_name
-  endpoint         = "logging"
-}
+#resource "juju_offer" "prometheus-remote-write" {
+#  model            = module.cos-lite.model_name
+#  application_name = module.cos-lite.prometheus_app_name
+#  endpoint         = "receive-remote-write"
+#}
+#resource "juju_offer" "loki-logging" {
+#  model            = module.cos-lite.model_name
+#  application_name = module.cos-lite.loki_app_name
+#  endpoint         = "logging"
+#}
 #
 #resource "juju_integration" "prometheus" {
 #  model = juju_model.sdcore.name
