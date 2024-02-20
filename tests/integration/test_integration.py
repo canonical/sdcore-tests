@@ -1,171 +1,170 @@
 #!/usr/bin/env python3
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
+
 import json
 import logging
 import os
 from typing import Tuple
 
+import juju_helper
 import pytest
 import requests
-from fixtures import (
-    COS_MODEL_NAME,
-    configure_sdcore,
-    configure_traefik_external_hostname,
-    deploy_cos,
-    deploy_gnbsim,
-    setup,
-)
-from pytest_operator.plugin import OpsTest
+from jinja2 import Environment, FileSystemLoader
 from requests.auth import HTTPBasicAuth
-from terraform_helper import Terraform
+from terraform_helper import TerraformClient
+from webui_helper import WebUI
 
 logger = logging.getLogger(__name__)
 
+SDCORE_MODEL_NAME = "sdcore"
+COS_MODEL_NAME = "cos-lite"
+TERRAFORM_DIR = "terraform"
+TFVARS_FILE = "integration_tests.auto.tfvars"
+TEST_DEVICE_GROUP_NAME = "default-default"
+TEST_IMSI = "208930100007487"
+TEST_NETWORK_SLICE_NAME = "default"
+
 
 class TestSDCoreBundle:
-    @pytest.mark.abort_on_fail
-    async def test_given_sdcore_bundle_when_deploy_then_status_is_active(
-        self, ops_test: OpsTest, setup
-    ):
-        await self._deploy_sdcore(ops_test)
-        await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
-            apps=[*ops_test.model.applications],  # type: ignore[union-attr]
-            raise_on_error=False,
-            status="active",
-            idle_period=10,
-            timeout=1500,
+    @classmethod
+    def setup_class(cls):
+        juju_helper.set_model_config(
+            model_name=SDCORE_MODEL_NAME,
+            config={"update-status-hook-interval": "1m"},
         )
 
-    # @pytest.mark.abort_on_fail
-    # async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
-    #     self, ops_test: OpsTest
-    # ):
-    #     gnbsim_unit = ops_test.model.units["gnbsim/0"]  # type: ignore[union-attr]
-    #     start_simulation = await gnbsim_unit.run_action("start-simulation")
-    #     action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
-    #         action_uuid=start_simulation.entity_id, wait=300
-    #     )
-    #     assert action_output["success"] == "true"
-    #
-    # @pytest.mark.abort_on_fail
-    # async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
-    #     self, ops_test: OpsTest, configure_traefik_external_hostname
-    # ):
-    #     nms_url = await self._get_nms_url(ops_test)
-    #     network_configuration_resp = requests.get(f"{nms_url}/network-configuration")
-    #     network_configuration_resp.raise_for_status()
-    #     subscribers_resp = requests.get(f"{nms_url}/subscribers")
-    #     subscribers_resp.raise_for_status()
-    #
-    # @pytest.mark.abort_on_fail
-    # async def test_given_cos_lite_integrated_with_sdcore_when_searching_for_5g_network_overview_dashboard_in_grafana_then_dashboard_exists(  # noqa: E501
-    #     self, ops_test: OpsTest
-    # ):
-    #     dashboard_name = "5G Network Overview"
-    #     grafana_url, grafana_passwd = await self._get_grafana_url_and_admin_password(ops_test)
-    #     network_overview_dashboard_query = "%20".join(dashboard_name.split())
-    #     request_url = f"{grafana_url}/api/search?query={network_overview_dashboard_query}"
-    #     resp = requests.get(
-    #         url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
-    #     )
-    #     resp.raise_for_status()
+    @pytest.mark.abort_on_fail
+    async def test_given_sdcore_terraform_module_when_deploy_then_status_is_active(self):
+        self._deploy_sdcore()
+        juju_helper.juju_wait_for_active_idle(model_name=SDCORE_MODEL_NAME, timeout=1800)
 
-    async def _deploy_sdcore(self, ops_test: OpsTest):
-        """Deploys `sdcore-k8s` bundle.
+    @pytest.mark.abort_on_fail
+    async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
+        self, configure_sdcore
+    ):
+        action_output = juju_helper.juju_run_action(
+            model_name=SDCORE_MODEL_NAME,
+            application_name="gnbsim",
+            unit_number=0,
+            action_name="start-simulation",
+            timeout=300,
+        )
+        assert action_output["success"] == "true"
 
-        Args:
-            ops_test: OpsTest
+    @pytest.mark.abort_on_fail
+    async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
+        self, configure_traefik_external_hostname
+    ):
+        nms_url = self._get_nms_url()
+        network_configuration_resp = requests.get(f"{nms_url}/network-configuration")
+        network_configuration_resp.raise_for_status()
+        subscribers_resp = requests.get(f"{nms_url}/subscribers")
+        subscribers_resp.raise_for_status()
+
+    @pytest.mark.abort_on_fail
+    async def test_given_cos_lite_integrated_with_sdcore_when_searching_for_5g_network_overview_dashboard_in_grafana_then_dashboard_exists(  # noqa: E501
+        self,
+    ):
+        dashboard_name = "5G Network Overview"
+        grafana_url, grafana_passwd = await self._get_grafana_url_and_admin_password()
+        network_overview_dashboard_query = "%20".join(dashboard_name.split())
+        request_url = f"{grafana_url}/api/search?query={network_overview_dashboard_query}"
+        resp = requests.get(
+            url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
+        )
+        resp.raise_for_status()
+
+    def _deploy_sdcore(self):
+        """Deploys the SD-Core Terraform module for testing.
+
+        SD-Core Terraform module contains:
+        - sdcore-k8s Terraform module
+        - cos-lite Terraform module
+        - sdcore-router-k8s Terraform module
+        - sdcore-gnbsim-k8s Terraform module
         """
-        tf_client = Terraform(work_dir=os.path.join(os.getcwd(), "terraform"))
+        self._generate_tfvars_file()
+        tf_client = TerraformClient(work_dir=os.path.join(os.getcwd(), TERRAFORM_DIR))
         tf_client.init()
-        tf_client.plan()
         tf_client.apply()
 
     @staticmethod
-    async def _deploy_sdcore_router(ops_test: OpsTest):
-        """Deploys `sdcore-router-k8s`.
-
-        Args:
-            ops_test: OpsTest
-        """
-        await ops_test.model.deploy(  # type: ignore[union-attr]
-            "sdcore-router-k8s",
-            application_name="router",
-            channel="edge",
-            trust=True,
+    def _generate_tfvars_file():
+        """Generates .tfvars file to configure Terraform deployment."""
+        jinja2_environment = Environment(loader=FileSystemLoader(f"{TERRAFORM_DIR}/"))
+        template = jinja2_environment.get_template(f"{TFVARS_FILE}.j2")
+        content = template.render(
+            sdcore_model_name=SDCORE_MODEL_NAME,
+            cos_model_name=COS_MODEL_NAME,
         )
-        await ops_test.model.wait_for_idle(  # type: ignore[union-attr]
-            apps=["router"],
-            raise_on_error=False,
-            status="active",
-            idle_period=10,
-            timeout=300,
-        )
+        with open(f"{TERRAFORM_DIR}/{TFVARS_FILE}", mode="w") as tfvars:
+            tfvars.write(content)
 
     @staticmethod
-    async def _create_cross_model_relation(
-        ops_test: OpsTest,
-        provider_model: str,
-        offer_name: str,
-        provider_relation_name: str,
-        requirer_app: str,
-        requirer_relation_name: str,
-    ) -> None:
-        """Creates a cross-model relation.
-
-        1. Consumes an offer created by the relation provider model
-        2. Creates a relation between the provider and the consumer.
-
-        Args:
-            ops_test: OpsTest
-            provider_model: Provider model name
-            offer_name: Relation offer name
-            provider_relation_name: Provider relation name
-            requirer_app: Requirer application name
-            requirer_relation_name: Requirer relation name
-        """
-        consume_run_args = ["juju", "consume", f"{provider_model}.{offer_name}"]
-        retcode, stdout, stderr = await ops_test.run(*consume_run_args)
-        if retcode != 0:
-            raise RuntimeError(f"Error: {stderr}")
-        await ops_test.model.add_relation(  # type: ignore[union-attr]
-            f"{offer_name}:{provider_relation_name}", f"{requirer_app}:{requirer_relation_name}"
-        )
-
-    @staticmethod
-    async def _get_nms_url(ops_test: OpsTest) -> str:
+    def _get_nms_url() -> str:
         """Gets the URL of the SD-Core NMS application from Traefik.
-
-        Args:
-            ops_test: OpsTest
 
         Returns:
             str: URL of the SD-Core NMS application
         """
-        traefik_unit = ops_test.model.units["traefik-k8s/0"]  # type: ignore[union-attr]
-        show_endpoints = await traefik_unit.run_action("show-proxied-endpoints")
-        action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
-            action_uuid=show_endpoints.entity_id, wait=300
+        action_output = juju_helper.juju_run_action(
+            model_name=SDCORE_MODEL_NAME,
+            application_name="traefik",
+            unit_number=0,
+            action_name="show-proxied-endpoints",
         )
         proxied_endpoints = json.loads(action_output["proxied-endpoints"])
         return proxied_endpoints["nms"]["url"]
 
     @staticmethod
-    async def _get_grafana_url_and_admin_password(ops_test: OpsTest) -> Tuple[str, str]:
+    async def _get_grafana_url_and_admin_password() -> Tuple[str, str]:
         """Gets Grafana URL and admin password.
-
-        Args:
-            ops_test: OpsTest
 
         Returns:
             str: Grafana URL
             str: Grafana admin password
         """
-        with ops_test.model_context(COS_MODEL_NAME):
-            grafana_unit = ops_test.model.units["grafana/0"]  # type: ignore[union-attr]
-            get_admin_password = await grafana_unit.run_action("get-admin-password")
-            action_output = await ops_test.model.get_action_output(  # type: ignore[union-attr]
-                action_uuid=get_admin_password.entity_id, wait=300
-            )
+        action_output = juju_helper.juju_run_action(
+            model_name=COS_MODEL_NAME,
+            application_name="grafana",
+            unit_number=0,
+            action_name="get-admin-password",
+        )
         return action_output["url"], action_output["admin-password"]
+
+
+@pytest.fixture(scope="module")
+@pytest.mark.abort_on_fail
+def configure_sdcore():
+    """Configures Charmed SD-Core.
+
+    Configuration includes:
+    - subscriber creation
+    - device group creation
+    - network slice creation
+    """
+    webui_ip_address = juju_helper.get_unit_address(
+        model_name=SDCORE_MODEL_NAME,
+        application_name="webui",
+        unit_number=0,
+    )
+    webui_client = WebUI(webui_ip_address)
+    webui_client.create_subscriber(TEST_IMSI)
+    webui_client.create_device_group(TEST_DEVICE_GROUP_NAME, [TEST_IMSI])
+    webui_client.create_network_slice(TEST_NETWORK_SLICE_NAME, [TEST_DEVICE_GROUP_NAME])
+
+
+@pytest.fixture(scope="module")
+@pytest.mark.abort_on_fail
+def configure_traefik_external_hostname() -> None:
+    """Configures external hostname for Traefik charm using its external IP and nip.io."""
+    traefik_public_address = juju_helper.get_application_address(
+        model_name=SDCORE_MODEL_NAME,
+        application_name="traefik",
+    )
+    juju_helper.set_application_config(
+        model_name=SDCORE_MODEL_NAME,
+        application_name="traefik",
+        config={"external_hostname": f"{traefik_public_address}.nip.io"},
+    )

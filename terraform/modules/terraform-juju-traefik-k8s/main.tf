@@ -9,6 +9,7 @@ resource "juju_application" "traefik" {
     name    = "traefik-k8s"
     channel = var.channel
   }
+  config = var.config
 
   units = 1
   trust = true

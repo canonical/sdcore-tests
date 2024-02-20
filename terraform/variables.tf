@@ -4,13 +4,13 @@
 variable "sdcore_model_name" {
   description = "Name of Juju model to deploy application to."
   type        = string
-  default     = "core"
+  default     = "sdcore"
 }
 
 variable "cos_model_name" {
   description = "Name of Juju model to deploy application to."
   type        = string
-  default     = "cos"
+  default     = "cos-lite"
 }
 
 variable "channel" {
@@ -18,4 +18,3 @@ variable "channel" {
   type        = string
   default     = "edge"
 }
-

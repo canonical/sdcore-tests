@@ -10,6 +10,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Terraform
+        run: sudo snap install terraform --classic
+
       - name: Setup operator environment
         uses: charmed-kubernetes/actions-operator@main
         with:

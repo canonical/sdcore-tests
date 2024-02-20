@@ -18,3 +18,9 @@ variable "channel" {
   type        = string
   default     = "stable"
 }
+
+variable "config" {
+  description = "Additional configuration for the Traefik charm. Please see the available options: https://charmhub.io/traefik-k8s/configure."
+  type        = map(string)
+  default     = {}
+}
