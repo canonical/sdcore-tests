@@ -31,7 +31,7 @@ def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10
                 for app_unit, unit_status in app_status["units"].items():
                     workload_status = unit_status["workload-status"]["current"]
                     unit_juju_status = unit_status["juju-status"]["current"]
-                    if workload_status != "active" and unit_juju_status != "idle":
+                    if workload_status != "active" or unit_juju_status != "idle":
                         not_ready[app_unit] = (workload_status, unit_juju_status)
             if not_ready:
                 for unit, status in not_ready.items():
