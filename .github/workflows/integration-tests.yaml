@@ -33,7 +33,7 @@ jobs:
         run: tox -vve integration
 
       - name: Debug
-        run: juju crashdump
+        run: juju-crashdump
 
       - name: Archive juju crashdump
 #        if: failure()
