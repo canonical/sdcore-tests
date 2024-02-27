@@ -32,8 +32,14 @@ jobs:
       - name: Run integration tests
         run: tox -vve integration
 
+      - name: Gather logs
+        run: |
+          for model in $(juju models --format=json | jq .models[].name); do
+            juju-crashdump -m $model
+          done
+
       - name: Debug
-        run: juju-crashdump
+        run: ls -al
 
       - name: Archive juju crashdump
 #        if: failure()
