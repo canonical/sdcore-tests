@@ -36,7 +36,7 @@ jobs:
         if: always()
         run: |
           for model in $(juju models --format=json | jq .models[].name); do
-            juju-crashdump -m $model
+            sudo juju-crashdump -m $model
           done
 
       - name: Debug
