@@ -33,13 +33,10 @@ jobs:
         run: tox -vve integration
 
       - name: Debug
-        run: |
-          pwd
-          ls -al
-          sudo find / -name juju-crashdump-*.tar.xz
+        run: juju crashdump
 
       - name: Archive juju crashdump
-        if: failure()
+#        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: juju-crashdump
