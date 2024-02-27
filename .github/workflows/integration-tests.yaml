@@ -33,16 +33,18 @@ jobs:
         run: tox -vve integration
 
       - name: Gather logs
+        if: always()
         run: |
           for model in $(juju models --format=json | jq .models[].name); do
             juju-crashdump -m $model
           done
 
       - name: Debug
+        if: always()
         run: ls -al
 
       - name: Archive juju crashdump
-#        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: juju-crashdump
