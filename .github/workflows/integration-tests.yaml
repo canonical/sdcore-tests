@@ -37,9 +37,8 @@ jobs:
         run: |
           juju models
           juju models --format=json | jq .models[].name
-#          for model in $(juju models --format=json | jq .models[].name); do
-#            sudo juju-crashdump -m $model
-#          done
+          juju-crashdump -m sdcore
+          juju-crashdump -m cos-lite
 
       - name: Debug
         if: always()
