@@ -5,6 +5,7 @@
 import json
 import logging
 import os
+import time
 from typing import Tuple
 
 import juju_helper
@@ -153,6 +154,7 @@ def configure_sdcore():
     webui_client.create_subscriber(TEST_IMSI)
     webui_client.create_device_group(TEST_DEVICE_GROUP_NAME, [TEST_IMSI])
     webui_client.create_network_slice(TEST_NETWORK_SLICE_NAME, [TEST_DEVICE_GROUP_NAME])
+    time.sleep(15)
 
 
 @pytest.fixture(scope="module")

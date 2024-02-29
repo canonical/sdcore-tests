@@ -35,14 +35,8 @@ jobs:
       - name: Gather logs
         if: always()
         run: |
-          juju models
-          juju models --format=json | jq .models[].name
           juju-crashdump -m sdcore
           juju-crashdump -m cos-lite
-
-      - name: Debug
-        if: always()
-        run: ls -al
 
       - name: Archive juju crashdump
         if: always()
