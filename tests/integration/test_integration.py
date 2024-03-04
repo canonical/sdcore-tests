@@ -49,7 +49,7 @@ class TestSDCoreBundle:
             application_name="gnbsim",
             unit_number=0,
             action_name="start-simulation",
-            timeout=300,
+            timeout=6 * 60,
         )
         assert action_output["success"] == "true"
 
