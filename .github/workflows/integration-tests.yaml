@@ -34,9 +34,7 @@ jobs:
 
       - name: Gather logs
         if: always()
-        run: |
-          juju-crashdump -m sdcore
-          juju-crashdump -m cos-lite
+        run: juju-crashdump -m sdcore
 
       - name: Archive juju crashdump
         if: always()
