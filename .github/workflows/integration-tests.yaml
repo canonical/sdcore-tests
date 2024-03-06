@@ -36,8 +36,8 @@ jobs:
         if: always()
         run: |
           juju-crashdump -m sdcore
-          for pod in $(microk8s.kubectl -n sdcore get pods -o json | jq .items[].metadata.name | tr -d '"'); do
-            microk8s.kubectl -n sdcore logs $pod --all-containers > pod-$pod.log
+          for pod in $(sudo microk8s.kubectl -n sdcore get pods -o json | jq .items[].metadata.name | tr -d '"'); do
+           sudo  microk8s.kubectl -n sdcore logs $pod --all-containers > pod-$pod.log
           done
 
       - name: Archive juju crashdump
