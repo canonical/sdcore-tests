@@ -173,6 +173,7 @@ def set_application_config(model_name: str, application_name: str, config: dict)
                 raise JujuError(
                     f"Failed to set {model_key}={value} config for {application_name}"
                 ) from e
+    juju_wait_for_active_idle(model_name, 60)
 
 
 @contextmanager
