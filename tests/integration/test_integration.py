@@ -154,6 +154,7 @@ def configure_sdcore():
     webui_client.create_subscriber(TEST_IMSI)
     webui_client.create_device_group(TEST_DEVICE_GROUP_NAME, [TEST_IMSI])
     webui_client.create_network_slice(TEST_NETWORK_SLICE_NAME, [TEST_DEVICE_GROUP_NAME])
+    # 5 seconds for the config to propagate
     time.sleep(5)
 
 
