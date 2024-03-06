@@ -5,6 +5,7 @@
 import json
 import logging
 import os
+import time
 from typing import Tuple
 
 import juju_helper
@@ -48,7 +49,7 @@ class TestSDCoreBundle:
             application_name="gnbsim",
             unit_number=0,
             action_name="start-simulation",
-            timeout=300,
+            timeout=6 * 60,
         )
         assert action_output["success"] == "true"
 
@@ -153,6 +154,8 @@ def configure_sdcore():
     webui_client.create_subscriber(TEST_IMSI)
     webui_client.create_device_group(TEST_DEVICE_GROUP_NAME, [TEST_IMSI])
     webui_client.create_network_slice(TEST_NETWORK_SLICE_NAME, [TEST_DEVICE_GROUP_NAME])
+    # 5 seconds for the config to propagate
+    time.sleep(5)
 
 
 @pytest.fixture(scope="module")

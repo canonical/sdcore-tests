@@ -32,9 +32,24 @@ jobs:
       - name: Run integration tests
         run: tox -vve integration
 
+      - name: Gather logs
+        if: always()
+        run: |
+          juju-crashdump -m sdcore
+          for pod in $(sudo microk8s.kubectl -n sdcore get pods -o json | jq .items[].metadata.name | tr -d '"'); do
+           sudo  microk8s.kubectl -n sdcore logs $pod --all-containers > pod-$pod.log
+          done
+
       - name: Archive juju crashdump
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: juju-crashdump
           path: juju-crashdump-*.tar.xz
+
+      - name: Archive k8s logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k8s-logs
+          path: pod-*.log
