@@ -51,6 +51,9 @@ class TestSDCoreBundle:
             action_name="start-simulation",
             timeout=6 * 60,
         )
+        logger.error("==========================================================================")
+        logger.error(action_output)
+        logger.error("==========================================================================")
         assert action_output["success"] == "true"
 
     @pytest.mark.abort_on_fail
