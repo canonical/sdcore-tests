@@ -5,7 +5,7 @@ on:
 
 jobs:
   integration-test:
-    runs-on: [self-hosted, linux, x64, jammy, two-xlarge]
+    runs-on: [self-hosted, linux, x64, jammy, xlarge]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,8 +29,8 @@ jobs:
           sudo microk8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
           sudo microk8s kubectl auth can-i create network-attachment-definitions
 
-      - name: Setup tmate session
-        uses: canonical/action-tmate@main
+#      - name: Setup tmate session
+#        uses: canonical/action-tmate@main
 
       - name: Run integration tests
         run: tox -vve integration
