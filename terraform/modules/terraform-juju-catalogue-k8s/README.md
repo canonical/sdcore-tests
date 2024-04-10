@@ -1,1 +1,0 @@
-# terraform-juju-catalogue-k8s

@@ -1,1 +1,0 @@
-# terraform-juju-alertmanager-k8s
