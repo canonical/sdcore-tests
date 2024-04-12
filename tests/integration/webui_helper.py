@@ -48,7 +48,7 @@ NETWORK_SLICE_CONFIG = {
 
 class WebUI:
     def __init__(self, webui_ip: str) -> None:
-        """Constructor.
+        """Construct the WebUI class.
 
         Args:
             webui_ip (str): IP address of the WebUI application unit
@@ -56,7 +56,7 @@ class WebUI:
         self.webui_ip = webui_ip
 
     def create_subscriber(self, imsi: str) -> None:
-        """Creates a subscriber.
+        """Create a subscriber.
 
         Args:
             imsi (str): Subscriber's IMSI
@@ -68,7 +68,7 @@ class WebUI:
         logger.info(f"Created subscriber with IMSI {imsi}.")
 
     def create_device_group(self, device_group_name: str, imsis: list) -> None:
-        """Creates a device group.
+        """Create a device group.
 
         Args:
             device_group_name (str): Device group name
@@ -89,7 +89,7 @@ class WebUI:
         raise TimeoutError("Timed out creating device group.")
 
     def create_network_slice(self, network_slice_name: str, device_groups: list) -> None:
-        """Creates a network slice.
+        """Create a network slice.
 
         Args:
             network_slice_name (str): Network slice name
