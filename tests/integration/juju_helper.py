@@ -21,7 +21,7 @@ def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10
         time_idle(int): Time to wait after applications become Active-Idle
 
     Raises:
-        TimeoutError: Raised if applications do not become Active-Idle withing given time
+        TimeoutError: Raised if applications do not become Active-Idle within given time
     """
     now = time.time()
     with juju_context(model_name):

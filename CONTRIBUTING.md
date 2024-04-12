@@ -1,6 +1,6 @@
 # Contributing
 
-To make contributions to this projec, you'll need a working [Juju development setup](https://juju.is/docs/sdk/dev-setup).
+To make contributions to this project, you'll need a working [Juju development setup](https://juju.is/docs/sdk/dev-setup).
 
 You can use the environments created by `tox` for development:
 
