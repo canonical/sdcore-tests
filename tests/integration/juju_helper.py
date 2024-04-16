@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10):
-    """Waits for all application in a given model to be become Active-Idle.
+    """Wait for all application in a given model to be become Active-Idle.
 
     Args:
         model_name(str): Juju model name
@@ -21,7 +21,7 @@ def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10
         time_idle(int): Time to wait after applications become Active-Idle
 
     Raises:
-        TimeoutError: Raised if applications do not become Active-Idle withing given time
+        TimeoutError: Raised if applications do not become Active-Idle within given time
     """
     now = time.time()
     with juju_context(model_name):
@@ -47,7 +47,7 @@ def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10
 
 
 def get_application_address(model_name: str, application_name: str) -> str:
-    """Gets Juju application IP address.
+    """Get Juju application IP address.
 
     Args:
         model_name(str): Juju model name
@@ -68,7 +68,7 @@ def get_application_address(model_name: str, application_name: str) -> str:
 
 
 def get_unit_address(model_name: str, application_name: str, unit_number: int) -> str:
-    """Gets Juju application unit IP address.
+    """Get Juju application unit IP address.
 
     Args:
         model_name(str): Juju model name
@@ -93,7 +93,7 @@ def get_unit_address(model_name: str, application_name: str, unit_number: int) -
 def juju_run_action(
     model_name: str, application_name: str, unit_number: int, action_name: str, timeout: int = 60
 ) -> dict:
-    """Runs Juju action.
+    """Run Juju action.
 
     Args:
         model_name(str): Juju model name
@@ -120,7 +120,7 @@ def juju_run_action(
 
 
 def juju_status(app_or_unit_name: Optional[str] = None) -> dict:
-    """Returns status of the model, application or unit.
+    """Return status of the model, application or unit.
 
     Args:
         app_or_unit_name(str): Juju application or unit name. If not specified, status
@@ -135,7 +135,7 @@ def juju_status(app_or_unit_name: Optional[str] = None) -> dict:
 
 
 def set_model_config(model_name: str, config: dict):
-    """Sets Juju model config.
+    """Set Juju model config.
 
     Args:
         model_name(str): Juju model name
@@ -155,7 +155,7 @@ def set_model_config(model_name: str, config: dict):
 
 
 def set_application_config(model_name: str, application_name: str, config: dict):
-    """Sets Juju model config.
+    """Set Juju model config.
 
     Args:
         model_name(str): Juju model name
@@ -178,7 +178,7 @@ def set_application_config(model_name: str, application_name: str, config: dict)
 
 @contextmanager
 def juju_context(model_name: str):
-    """Allows changing currently active Juju model.
+    """Allow changing currently active Juju model.
 
     Args:
         model_name(str): Juju model name

@@ -77,7 +77,7 @@ class TestSDCoreBundle:
         resp.raise_for_status()
 
     def _deploy_sdcore(self):
-        """Deploys the SD-Core Terraform module for testing.
+        """Deploy the SD-Core Terraform module for testing.
 
         SD-Core Terraform module contains:
         - sdcore-k8s Terraform module
@@ -92,7 +92,7 @@ class TestSDCoreBundle:
 
     @staticmethod
     def _generate_tfvars_file():
-        """Generates .tfvars file to configure Terraform deployment."""
+        """Generate .tfvars file to configure Terraform deployment."""
         jinja2_environment = Environment(loader=FileSystemLoader(f"{TERRAFORM_DIR}/"))
         template = jinja2_environment.get_template(f"{TFVARS_FILE}.j2")
         content = template.render(
@@ -104,7 +104,7 @@ class TestSDCoreBundle:
 
     @staticmethod
     def _get_nms_url() -> str:
-        """Gets the URL of the SD-Core NMS application from Traefik.
+        """Get the URL of the SD-Core NMS application from Traefik.
 
         Returns:
             str: URL of the SD-Core NMS application
@@ -120,7 +120,7 @@ class TestSDCoreBundle:
 
     @staticmethod
     async def _get_grafana_url_and_admin_password() -> Tuple[str, str]:
-        """Gets Grafana URL and admin password.
+        """Get Grafana URL and admin password.
 
         Returns:
             str: Grafana URL
@@ -138,7 +138,7 @@ class TestSDCoreBundle:
 @pytest.fixture(scope="module")
 @pytest.mark.abort_on_fail
 def configure_sdcore():
-    """Configures Charmed SD-Core.
+    """Configure Charmed SD-Core.
 
     Configuration includes:
     - subscriber creation
@@ -161,7 +161,7 @@ def configure_sdcore():
 @pytest.fixture(scope="module")
 @pytest.mark.abort_on_fail
 def configure_traefik_external_hostname() -> None:
-    """Configures external hostname for Traefik charm using its external IP and nip.io."""
+    """Configure external hostname for Traefik charm using its external IP and nip.io."""
     traefik_public_address = juju_helper.get_application_address(
         model_name=SDCORE_MODEL_NAME,
         application_name="traefik",
