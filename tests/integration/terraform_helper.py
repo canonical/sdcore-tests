@@ -27,7 +27,7 @@ class TerraformError(Exception):
 
 class TerraformClient:
     def __init__(self, work_dir: str = os.getcwd()):
-        """Constructor for the TerraformClient.
+        """Construct the TerraformClient.
 
         Args:
             work_dir(str): Directory containing Terraform root module. Defaults to current working
@@ -40,7 +40,7 @@ class TerraformClient:
         self.work_dir = work_dir
 
     def init(self):
-        """Initializes the Terraform provider.
+        """Initialize the Terraform provider.
 
         Equivalent to `terraform init` CLI command.
 
@@ -56,7 +56,7 @@ class TerraformClient:
             ) from e
 
     def apply(self, auto_approve: Optional[bool] = True):
-        """Applies the Terraform plan based on the module.
+        """Apply the Terraform plan based on the module.
 
         Equivalent to `terraform apply` CLI command.
 
@@ -79,7 +79,7 @@ class TerraformClient:
 
     @staticmethod
     def _terraform_available() -> bool:
-        """Checks whether the Terraform executable is installed.
+        """Check whether the Terraform executable is installed.
 
         Returns:
             bool: Whether the Terraform executable is installed
@@ -87,7 +87,7 @@ class TerraformClient:
         return which(TERRAFORM_APP_NAME) is not None
 
     def _run_terraform_cmd(self, terraform_command: str, *args) -> int:
-        """Runs Terraform command.
+        """Run Terraform command.
 
         Args:
             terraform_command(str): Terraform command to execute

@@ -1,15 +1,11 @@
-black
-flake8-docstrings
-flake8-builtins
-isort
+codespell
 Jinja2
 juju
 mypy
-pep8-naming
-pyproject-flake8
 pytest
 pytest-operator
 requests
+ruff
 types-PyYAML
 types-requests
 types-setuptools
