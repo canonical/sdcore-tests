@@ -54,7 +54,7 @@ class TestSDCoreBundle:
             )
             try:
                 assert action_output["success"] == "true"
-                break
+                return
             except AssertionError:
                 continue
         assert False
