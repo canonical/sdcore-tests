@@ -57,6 +57,7 @@ class TestSDCoreBundle:
                 break
             except AssertionError:
                 continue
+        assert False
 
     @pytest.mark.abort_on_fail
     async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
