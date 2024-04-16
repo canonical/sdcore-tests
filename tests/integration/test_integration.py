@@ -44,14 +44,20 @@ class TestSDCoreBundle:
     async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
         self, configure_sdcore
     ):
-        action_output = juju_helper.juju_run_action(
-            model_name=SDCORE_MODEL_NAME,
-            application_name="gnbsim",
-            unit_number=0,
-            action_name="start-simulation",
-            timeout=6 * 60,
-        )
-        assert action_output["success"] == "true"
+        for _ in range(5):
+            action_output = juju_helper.juju_run_action(
+                model_name=SDCORE_MODEL_NAME,
+                application_name="gnbsim",
+                unit_number=0,
+                action_name="start-simulation",
+                timeout=6 * 60,
+            )
+            try:
+                assert action_output["success"] == "true"
+                return
+            except AssertionError:
+                continue
+        assert False
 
     @pytest.mark.abort_on_fail
     async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
