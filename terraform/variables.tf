@@ -6,9 +6,3 @@ variable "sdcore_model_name" {
   type        = string
   default     = "sdcore"
 }
-
-variable "channel" {
-  description = "The channel to use when deploying a charm."
-  type        = string
-  default     = "edge"
-}
