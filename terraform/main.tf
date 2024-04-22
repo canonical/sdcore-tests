@@ -27,6 +27,7 @@ module "gnbsim" {
 
   model_name = juju_model.sdcore.name
   depends_on = [module.sdcore-router]
+  channel = "1.4/edge"
 }
 
 resource "juju_integration" "gnbsim-amf" {
