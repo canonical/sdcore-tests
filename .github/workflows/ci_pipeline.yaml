@@ -35,6 +35,7 @@ jobs:
             echo ISSUE_EXISTS="False" >> $GITHUB_OUTPUT
           fi
       - name: Create issue
+        id: create-issue
         if: steps.check-issue.outputs.ISSUE_EXISTS == 'False'
         uses: dacbd/create-issue-action@v2.0.0
         with:
@@ -44,3 +45,6 @@ jobs:
             ### Context
             [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
             [Codebase](https://github.com/${{ github.repository }}/tree/${{ github.sha }})
+      - name: Sync Issues to JIRA
+        if: steps.create-issue.conclusion == 'success'
+        uses: canonical/sdcore-github-workflows/.github/workflows/issues.yaml@v0.0.1
