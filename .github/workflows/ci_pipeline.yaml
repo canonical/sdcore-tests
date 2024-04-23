@@ -45,6 +45,10 @@ jobs:
             ### Context
             [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
             [Codebase](https://github.com/${{ github.repository }}/tree/${{ github.sha }})
-      - name: Sync Issues to JIRA
-        if: steps.create-issue.conclusion == 'success'
+
+  sync-issues:
+    runs-on: ubuntu-latest
+    needs: [ create-issue ]
+    steps:
+      - name: Sync issues to JIRA
         uses: canonical/sdcore-github-workflows/.github/workflows/issues.yaml@v0.0.1
