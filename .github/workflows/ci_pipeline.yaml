@@ -49,6 +49,6 @@ jobs:
             [Codebase](https://github.com/${{ github.repository }}/tree/${{ github.sha }})
 
   sync-issues:
-    needs: [ create-issue ]
+    if: always()
     uses: canonical/sdcore-github-workflows/.github/workflows/issues.yaml@v0.0.1
     secrets: inherit
