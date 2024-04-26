@@ -16,6 +16,7 @@ module "sdcore" {
   source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-k8s?ref=v1.4"
 
   model_name = juju_model.sdcore.name
+  sdcore_channel = "1.4/edge"
   create_model = false
   deploy_cos = true
 
