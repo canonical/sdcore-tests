@@ -1,0 +1,60 @@
+name: Release 1.4
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  codeql:
+    uses: canonical/sdcore-github-workflows/.github/workflows/codeql-analysis.yml@v0.0.1
+    with:
+      branch-name: "v1.4"
+
+  lint-report:
+    uses: canonical/sdcore-github-workflows/.github/workflows/lint-report.yaml@v0.0.1
+    with:
+      branch-name: "v1.4"
+
+  static-analysis:
+    uses: canonical/sdcore-github-workflows/.github/workflows/static-analysis.yaml@v0.0.1
+    with:
+      branch-name: "v1.4"
+
+  integration-test:
+    uses: ./.github/workflows/integration-tests.yaml
+    with:
+      branch-name: "v1.4"
+    secrets: inherit
+
+  create-issue:
+    runs-on: ubuntu-latest
+    if: ${{ always() && github.ref_name == 'main' && contains(join(needs.*.result, ','), 'failure') }}
+    needs: [ lint-report, static-analysis, integration-test ]
+    steps:
+      - name: Check whether the issue already exists
+        id: check-issue
+        continue-on-error: true
+        run: |
+          if curl -L -H "Authorization: Bearer ${{ github.token }}" https://api.github
+          .com/repos/$GITHUB_REPOSITORY/issues | grep "Release 1.4 - CI run failed"; then
+            echo ISSUE_EXISTS="True" >> $GITHUB_OUTPUT
+          else
+            echo ISSUE_EXISTS="False" >> $GITHUB_OUTPUT
+          fi
+      - name: Create issue
+        id: create-issue
+        if: steps.check-issue.outputs.ISSUE_EXISTS == 'False'
+        uses: dacbd/create-issue-action@v2.0.0
+        with:
+          token: ${{ github.token }}
+          title: "[sdcore-tests] Release 1.4 - CI run failed"
+          body: |
+            ### Context
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            [Codebase](https://github.com/${{ github.repository }}/tree/${{ github.sha }})
+
+  sync-issues:
+    if: always()
+    needs: [ create-issue ]
+    uses: canonical/sdcore-github-workflows/.github/workflows/issues.yaml@v0.0.1
+    secrets: inherit
