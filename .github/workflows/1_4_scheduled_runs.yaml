@@ -1,25 +1,29 @@
-name: CI workflow on push
+name: Release 1.4
 
 on:
-  push:
-  pull_request:
-    branches:
-      - main
   schedule:
     - cron: '0 2 * * *'
 
 jobs:
   codeql:
-    uses: canonical/sdcore-github-workflows/.github/workflows/codeql-analysis.yml@v1.0.0
+    uses: canonical/sdcore-github-workflows/.github/workflows/codeql-analysis.yml@v0.0.1
+    with:
+      branch-name: "v1.4"
 
   lint-report:
-    uses: canonical/sdcore-github-workflows/.github/workflows/lint-report.yaml@v1.0.0
+    uses: canonical/sdcore-github-workflows/.github/workflows/lint-report.yaml@v0.0.1
+    with:
+      branch-name: "v1.4"
 
   static-analysis:
-    uses: canonical/sdcore-github-workflows/.github/workflows/static-analysis.yaml@v1.0.0
+    uses: canonical/sdcore-github-workflows/.github/workflows/static-analysis.yaml@v0.0.1
+    with:
+      branch-name: "v1.4"
 
   integration-test:
     uses: ./.github/workflows/integration-tests.yaml
+    with:
+      branch-name: "v1.4"
     secrets: inherit
 
   create-issue:
@@ -31,7 +35,8 @@ jobs:
         id: check-issue
         continue-on-error: true
         run: |
-          if curl -L -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/$GITHUB_REPOSITORY/issues | grep "CI run failed"; then
+          if curl -L -H "Authorization: Bearer ${{ github.token }}" https://api.github
+          .com/repos/$GITHUB_REPOSITORY/issues | grep "Release 1.4 - CI run failed"; then
             echo ISSUE_EXISTS="True" >> $GITHUB_OUTPUT
           else
             echo ISSUE_EXISTS="False" >> $GITHUB_OUTPUT
@@ -42,7 +47,7 @@ jobs:
         uses: dacbd/create-issue-action@v2.0.0
         with:
           token: ${{ github.token }}
-          title: "[sdcore-tests] CI run failed"
+          title: "[sdcore-tests] Release 1.4 - CI run failed"
           body: |
             ### Context
             [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
@@ -51,5 +56,5 @@ jobs:
   sync-issues:
     if: always()
     needs: [ create-issue ]
-    uses: canonical/sdcore-github-workflows/.github/workflows/issues.yaml@v1.0.0
+    uses: canonical/sdcore-github-workflows/.github/workflows/issues.yaml@v0.0.1
     secrets: inherit
