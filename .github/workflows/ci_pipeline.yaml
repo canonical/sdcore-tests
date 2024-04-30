@@ -1,12 +1,10 @@
-name: CI workflow on push
+name: Release 1.4 CI
 
 on:
   push:
   pull_request:
     branches:
       - v1.4
-  schedule:
-    - cron: '0 2 * * *'
 
 jobs:
   codeql:
@@ -31,7 +29,8 @@ jobs:
         id: check-issue
         continue-on-error: true
         run: |
-          if curl -L -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/$GITHUB_REPOSITORY/issues | grep "CI run failed"; then
+          if curl -L -H "Authorization: Bearer ${{ github.token }}" https://api.github
+          .com/repos/$GITHUB_REPOSITORY/issues | grep "Release 1.4 - CI run failed"; then
             echo ISSUE_EXISTS="True" >> $GITHUB_OUTPUT
           else
             echo ISSUE_EXISTS="False" >> $GITHUB_OUTPUT
@@ -42,7 +41,7 @@ jobs:
         uses: dacbd/create-issue-action@v2.0.0
         with:
           token: ${{ github.token }}
-          title: "[sdcore-tests] CI run failed"
+          title: "[sdcore-tests] Release 1.4 - CI run failed"
           body: |
             ### Context
             [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
