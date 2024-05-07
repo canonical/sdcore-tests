@@ -7,7 +7,7 @@ on:
         description: Name of the branch to checkout
         required: false
         type: string
-        default: main
+        default: ${{ github.ref }}
 
 jobs:
   integration-test:
