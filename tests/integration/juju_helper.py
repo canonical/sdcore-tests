@@ -29,7 +29,7 @@ def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10
             not_ready = {}
             for _, app_status in juju_status().items():
                 for app_unit, unit_status in app_status["units"].items():
-                    if not "traefik" in app_unit:
+                    if "traefik" not in app_unit:
                         workload_status = unit_status["workload-status"]["current"]
                         unit_juju_status = unit_status["juju-status"]["current"]
                         if workload_status != "active" or unit_juju_status != "idle":
