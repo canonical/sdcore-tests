@@ -59,6 +59,9 @@ class TestSDCoreBundle:
                 continue
         assert False
 
+    @pytest.mark.skip(
+        reason="Traefik issue: https://github.com/canonical/traefik-k8s-operator/issues/361"
+    )
     @pytest.mark.abort_on_fail
     async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
         self, configure_traefik_external_hostname
