@@ -20,7 +20,7 @@ cffi==1.16.0
     #   pynacl
 charset-normalizer==3.3.2
     # via requests
-codespell==2.2.6
+codespell==2.3.0
     # via -r requirements.in
 cryptography==42.0.5
     # via paramiko
