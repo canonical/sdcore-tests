@@ -29,8 +29,7 @@ jobs:
         id: check-issue
         continue-on-error: true
         run: |
-          if curl -L -H "Authorization: Bearer ${{ github.token }}" https://api.github
-          .com/repos/$GITHUB_REPOSITORY/issues | grep "Release 1.4 - CI run failed"; then
+          if curl -L -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/$GITHUB_REPOSITORY/issues | grep "Release 1.4 - CI run failed"; then
             echo ISSUE_EXISTS="True" >> $GITHUB_OUTPUT
           else
             echo ISSUE_EXISTS="False" >> $GITHUB_OUTPUT
