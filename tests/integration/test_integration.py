@@ -55,7 +55,7 @@ class TestSDCoreBundle:
             try:
                 assert action_output["success"] == "true"
                 return
-            except [AssertionError, KeyError]:
+            except (AssertionError, KeyError):
                 continue
         assert False
 
