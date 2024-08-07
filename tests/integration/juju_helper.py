@@ -110,8 +110,8 @@ def juju_run_action(
         JujuError: Custom error raised when running Juju action fails
     """
     with juju_context(model_name):
+        unit_name = f"{application_name}/{unit_number}"
         try:
-            unit_name = f"{application_name}/{unit_number}"
             cmd_out = check_output(
                 ["juju", "run", unit_name, action_name, f"--wait={timeout}s", "--format=json"]
             ).decode()

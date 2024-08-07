@@ -1,12 +1,8 @@
 codespell
 Jinja2
 juju
-mypy
+pyright
 pytest
 pytest-operator
 requests
 ruff
-types-PyYAML
-types-requests
-types-setuptools
-types-toml
