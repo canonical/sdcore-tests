@@ -110,14 +110,14 @@ def juju_run_action(
         JujuError: Custom error raised when running Juju action fails
     """
     with juju_context(model_name):
+        unit_name = f"{application_name}/{unit_number}"
         try:
-            unit_name = f"{application_name}/{unit_number}"
             cmd_out = check_output(
                 ["juju", "run", unit_name, action_name, f"--wait={timeout}s", "--format=json"]
             ).decode()
             return json.loads(cmd_out)[unit_name]["results"]
         except (CalledProcessError, KeyError) as e:
-            raise JujuError(f"Failed to run {action_name} action on {unit_name}!") from e  # type: ignore[reportPossiblyUnboundVariable]
+            raise JujuError(f"Failed to run {action_name} action on {unit_name}!") from e
 
 
 def juju_status(app_or_unit_name: Optional[str] = None) -> dict:
