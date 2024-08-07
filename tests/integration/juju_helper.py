@@ -117,7 +117,7 @@ def juju_run_action(
             ).decode()
             return json.loads(cmd_out)[unit_name]["results"]
         except (CalledProcessError, KeyError) as e:
-            raise JujuError(f"Failed to run {action_name} action on {unit_name}!") from e
+            raise JujuError(f"Failed to run {action_name} action on {unit_name}!") from e  # type: ignore[reportPossiblyUnboundVariable]
 
 
 def juju_status(app_or_unit_name: Optional[str] = None) -> dict:

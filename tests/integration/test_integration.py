@@ -8,13 +8,14 @@ import os
 import time
 from typing import Tuple
 
-import juju_helper
 import pytest
 import requests
 from jinja2 import Environment, FileSystemLoader
 from requests.auth import HTTPBasicAuth
-from terraform_helper import TerraformClient
-from webui_helper import WebUI
+
+from tests.integration import juju_helper
+from tests.integration.terraform_helper import TerraformClient
+from tests.integration.webui_helper import WebUI
 
 logger = logging.getLogger(__name__)
 
