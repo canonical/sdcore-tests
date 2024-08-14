@@ -13,8 +13,9 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from nms_helper import Nms
 from requests.auth import HTTPBasicAuth
-from tests.integration import juju_helper
 from terraform_helper import TerraformClient
+
+from tests.integration import juju_helper
 
 logger = logging.getLogger(__name__)
 
