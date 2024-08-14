@@ -12,9 +12,9 @@ import juju_helper
 import pytest
 import requests
 from jinja2 import Environment, FileSystemLoader
+from nms_helper import Nms
 from requests.auth import HTTPBasicAuth
 from terraform_helper import TerraformClient
-from webui_helper import WebUI
 
 logger = logging.getLogger(__name__)
 
@@ -154,15 +154,15 @@ def configure_sdcore():
     - device group creation
     - network slice creation
     """
-    webui_ip_address = juju_helper.get_unit_address(
+    nms_ip_address = juju_helper.get_unit_address(
         model_name=SDCORE_MODEL_NAME,
-        application_name="webui",
+        application_name="nms",
         unit_number=0,
     )
-    webui_client = WebUI(webui_ip_address)
-    webui_client.create_subscriber(TEST_IMSI)
-    webui_client.create_device_group(TEST_DEVICE_GROUP_NAME, [TEST_IMSI])
-    webui_client.create_network_slice(TEST_NETWORK_SLICE_NAME, [TEST_DEVICE_GROUP_NAME])
+    nms_client = Nms(nms_ip_address)
+    nms_client.create_subscriber(TEST_IMSI)
+    nms_client.create_device_group(TEST_DEVICE_GROUP_NAME, [TEST_IMSI])
+    nms_client.create_network_slice(TEST_NETWORK_SLICE_NAME, [TEST_DEVICE_GROUP_NAME])
     # 5 seconds for the config to propagate
     time.sleep(5)
 
