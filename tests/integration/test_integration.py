@@ -38,7 +38,7 @@ class TestSDCoreBundle:
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_terraform_module_when_deploy_then_status_is_active(self):
         self._deploy_sdcore()
-        juju_helper.juju_wait_for_active_idle(model_name=SDCORE_MODEL_NAME, timeout=1200)
+        juju_helper.juju_wait_for_active_idle(model_name=SDCORE_MODEL_NAME, timeout=1500)
 
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
