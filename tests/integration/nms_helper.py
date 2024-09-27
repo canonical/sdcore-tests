@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 SUBSCRIBER_CONFIG = {
     "UeId": "PLACEHOLDER",
-    "plmnId": "20801",
+    "plmnId": "00101",
     "opc": "981d464c7c52eb6e5036234984ad0bcf",
     "key": "5122250214c33e723a5dd523fc145fc0",
     "sequenceNumber": "16f3b3f70fc2",
@@ -35,11 +35,11 @@ DEVICE_GROUP_CONFIG = {
     },
 }
 NETWORK_SLICE_CONFIG = {
-    "slice-id": {"sst": "1", "sd": "010203"},
+    "slice-id": {"sst": "1", "sd": "102030"},
     "site-device-group": [],
     "site-info": {
         "site-name": "demo",
-        "plmn": {"mcc": "208", "mnc": "93"},
+        "plmn": {"mcc": "00101", "mnc": "01"},
         "gNodeBs": [{"name": "demo-gnb1", "tac": 1}],
         "upf": {"upf-name": "upf-external", "upf-port": "8805"},
     },
