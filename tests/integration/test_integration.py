@@ -24,7 +24,7 @@ COS_MODEL_NAME = "cos-lite"
 TERRAFORM_DIR = "terraform"
 TFVARS_FILE = "integration_tests.auto.tfvars"
 TEST_DEVICE_GROUP_NAME = "default-default"
-TEST_IMSI = "208930100007487"
+TEST_IMSI = "001010100007487"
 TEST_NETWORK_SLICE_NAME = "default"
 
 
