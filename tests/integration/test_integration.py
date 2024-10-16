@@ -20,6 +20,7 @@ from tests.integration.terraform_helper import TerraformClient
 logger = logging.getLogger(__name__)
 
 SDCORE_MODEL_NAME = "sdcore"
+RAN_MODEL_NAME = "ran"
 COS_MODEL_NAME = "cos-lite"
 TERRAFORM_DIR = "terraform"
 TFVARS_FILE = "integration_tests.auto.tfvars"
@@ -40,6 +41,7 @@ class TestSDCoreBundle:
     async def test_given_sdcore_terraform_module_when_deploy_then_status_is_active(self):
         self._deploy_sdcore()
         juju_helper.juju_wait_for_active_idle(model_name=SDCORE_MODEL_NAME, timeout=1200)
+        juju_helper.juju_wait_for_active_idle(model_name=RAN_MODEL_NAME, timeout=1200)
 
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
@@ -47,7 +49,7 @@ class TestSDCoreBundle:
     ):
         for _ in range(5):
             action_output = juju_helper.juju_run_action(
-                model_name=SDCORE_MODEL_NAME,
+                model_name=RAN_MODEL_NAME,
                 application_name="gnbsim",
                 unit_number=0,
                 action_name="start-simulation",
@@ -107,7 +109,6 @@ class TestSDCoreBundle:
         template = jinja2_environment.get_template(f"{TFVARS_FILE}.j2")
         content = template.render(
             sdcore_model_name=SDCORE_MODEL_NAME,
-            cos_model_name=COS_MODEL_NAME,
         )
         with open(f"{TERRAFORM_DIR}/{TFVARS_FILE}", mode="w") as tfvars:
             tfvars.write(content)
