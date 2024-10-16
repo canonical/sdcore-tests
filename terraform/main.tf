@@ -8,16 +8,14 @@ resource "juju_model" "sdcore" {
 module "sdcore-router" {
   source = "git::https://github.com/canonical/sdcore-router-k8s-operator//terraform"
 
-  model_name = juju_model.sdcore.name
+  model      = juju_model.sdcore.name
   depends_on = [juju_model.sdcore]
 }
 
 module "sdcore" {
   source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-k8s"
 
-  model_name = juju_model.sdcore.name
-  create_model = false
-  deploy_cos = true
+  model = juju_model.sdcore.name
 
   depends_on = [module.sdcore-router]
 }
@@ -25,7 +23,7 @@ module "sdcore" {
 module "gnbsim" {
   source = "git::https://github.com/canonical/sdcore-gnbsim-k8s-operator//terraform"
 
-  model_name = juju_model.sdcore.name
+  model      = juju_model.sdcore.name
   depends_on = [module.sdcore-router]
 }
 
@@ -54,5 +52,42 @@ resource "juju_integration" "gnbsim-nms" {
   application {
     name     = module.sdcore.nms_app_name
     endpoint = module.sdcore.fiveg_gnb_identity_endpoint
+  }
+}
+
+module "cos" {
+  source                   = "git::https://github.com/canonical/terraform-juju-sdcore//modules/external/cos-lite"
+  model_name               = "cos-lite"
+  deploy_cos_configuration = true
+  cos_configuration_config = {
+    git_repo                = "https://github.com/canonical/sdcore-cos-configuration"
+    git_branch              = "main"
+    grafana_dashboards_path = "grafana_dashboards/sdcore/"
+  }
+}
+
+resource "juju_integration" "prometheus-remote-write" {
+  model = juju_model.sdcore.name
+
+  application {
+    name     = module.sdcore.grafana_agent_app_name
+    endpoint = module.sdcore.send_remote_write_endpoint
+  }
+
+  application {
+    offer_url = module.cos.prometheus_remote_write_offer_url
+  }
+}
+
+resource "juju_integration" "loki-logging" {
+  model = juju_model.sdcore.name
+
+  application {
+    name     = module.sdcore.grafana_agent_app_name
+    endpoint = module.sdcore.logging_consumer_endpoint
+  }
+
+  application {
+    offer_url = module.cos.loki_logging_offer_url
   }
 }
