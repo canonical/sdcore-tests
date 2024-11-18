@@ -63,7 +63,7 @@ class Nms:
         """
         SUBSCRIBER_CONFIG["UeId"] = imsi
         url = f"https://{self.nms_ip}:5000/api/subscriber/imsi-{imsi}"
-        response = requests.post(url=url, data=json.dumps(SUBSCRIBER_CONFIG))
+        response = requests.post(url=url, data=json.dumps(SUBSCRIBER_CONFIG), verify=False)
         response.raise_for_status()
         logger.info(f"Created subscriber with IMSI {imsi}.")
 
@@ -76,7 +76,7 @@ class Nms:
         """
         DEVICE_GROUP_CONFIG["imsis"] = imsis
         url = f"https://{self.nms_ip}:5000/config/v1/device-group/{device_group_name}"
-        response = requests.post(url, json=DEVICE_GROUP_CONFIG)
+        response = requests.post(url, json=DEVICE_GROUP_CONFIG, verify=False)
         response.raise_for_status()
         now = time.time()
         timeout = 5
@@ -97,7 +97,7 @@ class Nms:
         """
         NETWORK_SLICE_CONFIG["site-device-group"] = device_groups
         url = f"https://{self.nms_ip}:5000/config/v1/network-slice/{network_slice_name}"
-        response = requests.post(url, json=NETWORK_SLICE_CONFIG)
+        response = requests.post(url, json=NETWORK_SLICE_CONFIG, verify=False)
         response.raise_for_status()
         now = time.time()
         timeout = 5
