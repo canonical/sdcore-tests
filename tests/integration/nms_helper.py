@@ -81,7 +81,7 @@ class Nms:
         now = time.time()
         timeout = 5
         while time.time() - now <= timeout:
-            if requests.get(url).json():
+            if requests.get(url, verify=False).json():
                 logger.info(f"Created device group {device_group_name}.")
                 return
             else:
@@ -102,7 +102,7 @@ class Nms:
         now = time.time()
         timeout = 5
         while time.time() - now <= timeout:
-            if requests.get(url).json():
+            if requests.get(url, verify=False).json():
                 logger.info(f"Created network slice {network_slice_name}.")
                 return
             else:
