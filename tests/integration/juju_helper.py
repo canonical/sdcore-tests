@@ -178,6 +178,23 @@ def set_application_config(model_name: str, application_name: str, config: dict)
 
 
 def _get_juju_secret_id(model_name: str, juju_secret_label: str) -> Optional[str]:
+    """Get Juju secret ID.
+
+    The `juju secrets` command returns a JSON object with the following format:
+    {
+        "csuci57mp25c7993rgeg": {
+            "revision": 1,
+            "owner": "nms",
+            "label": "NMS_LOGIN",
+            "created": "2024-11-19T17:21:25Z",
+            "updated": "2024-11-19T17:21:25Z"
+        }
+    }
+
+    Args:
+        model_name(str): Juju model name
+        juju_secret_label(str): Juju secret label
+    """
     with juju_context(model_name):
         cmd_out = check_output(["juju", "secrets", "--format=json"]).decode()
         for key, value in json.loads(cmd_out):
@@ -191,20 +208,20 @@ def get_nms_credentials(
 ) -> Tuple[Optional[str], Optional[str]]:
     """Get NMS credentials from Juju secret.
 
-    The NMS secret has the following format:
+    The `juju show-secret --reveal` command returns a JSON object with the following format:
     {
         "csuci57mp25c7993rgeg": {
             "revision": 1,
-            "owner": "notary-k8s",
-            "label": "Notary Login Details",
+            "owner": "nms",
+            "label": "NMS_LOGIN",
             "created": "2024-11-19T17:21:25Z",
             "updated": "2024-11-19T17:21:25Z",
             "content": {
-            "Data": {
-                "password": "whatever-password",
-                "token": "whatever-token",
-                "username": "whatever-username"
-            }
+                "Data": {
+                    "password": "whatever-password",
+                    "token": "whatever-token",
+                    "username": "whatever-username"
+                }
             }
         }
     }

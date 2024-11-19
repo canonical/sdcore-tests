@@ -29,6 +29,7 @@ TEST_IMSI = "001010100007487"
 TEST_NETWORK_SLICE_NAME = "default"
 NMS_CREDENTIALS_LABEL = "NMS_LOGIN"
 
+
 class TestSDCoreBundle:
     @classmethod
     def setup_class(cls):
