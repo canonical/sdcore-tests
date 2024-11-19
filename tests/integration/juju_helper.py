@@ -203,6 +203,30 @@ def _get_juju_secret_id(model_name: str, juju_secret_label: str) -> Optional[str
     return None
 
 
+def wait_for_nms_credentials(
+    model_name, juju_secret_label, timeout=300
+) -> Tuple[Optional[str], Optional[str]]:
+    """Wait for NMS credentials to be available in Juju secret.
+
+    Args:
+        model_name(str): Juju model name
+        juju_secret_label(str): Juju secret label
+        timeout(int): Time to wait for the credentials to be available
+
+    Raises:
+        TimeoutError: Raised if NMS credentials are not available within given time
+    """
+    now = time.time()
+    while time.time() - now <= timeout:
+        username, password = get_nms_credentials(model_name, juju_secret_label)
+        if username and password:
+            return username, password
+        time.sleep(5)
+    raise TimeoutError(
+        f"Timed out waiting for NMS credentials in juju secret after {timeout} seconds!"
+    )
+
+
 def get_nms_credentials(
     model_name: str, juju_secret_label: str
 ) -> Tuple[Optional[str], Optional[str]]:

@@ -48,7 +48,7 @@ class TestSDCoreBundle:
     async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
         self,
     ):
-        username, password = juju_helper.get_nms_credentials(
+        username, password = juju_helper.wait_for_nms_credentials(
             model_name=SDCORE_MODEL_NAME,
             juju_secret_label=NMS_CREDENTIALS_LABEL,
         )
@@ -173,6 +173,8 @@ def configure_sdcore(username: str, password: str) -> None:
         unit_number=0,
     )
     nms_client = NMS(url=f"https://{nms_ip_address}:5000")
+    nms_client.wait_for_api_to_be_available()
+    nms_client.wait_for_initialized()
     login_response = nms_client.login(username=username, password=password)
     if not login_response or not login_response.token:
         raise Exception("Failed to login to NMS.")

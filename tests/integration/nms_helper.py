@@ -6,6 +6,7 @@
 
 import json
 import logging
+import time
 from dataclasses import asdict, dataclass
 from typing import Any, List, Optional
 
@@ -139,6 +140,33 @@ class NMS:
         status = self.get_status()
         return status is not None
 
+    def get_status(self) -> StatusResponse | None:
+        """Return if NMS is initialized."""
+        response = self._make_request("GET", "/status")
+        if response:
+            return StatusResponse(
+                initialized=response.get("initialized"),
+            )
+        return None
+
+    def wait_for_api_to_be_available(self, timeout: int = 300) -> None:
+        """Wait for NMS API to be available."""
+        t0 = time.time()
+        while time.time() - t0 < timeout:
+            if self.is_api_available():
+                return
+            time.sleep(5)
+        raise TimeoutError(f"NMS API is not available after {timeout} seconds.")
+
+    def wait_for_initialized(self, timeout: int = 300) -> None:
+        """Wait for NMS to be initialized."""
+        t0 = time.time()
+        while time.time() - t0 < timeout:
+            if self.is_initialized():
+                return
+            time.sleep(5)
+        raise TimeoutError(f"NMS is not initialized after {timeout} seconds.")
+
     def login(self, username: str, password: str) -> LoginResponse | None:
         """Login to NMS by sending the username and password and return a Token."""
         login_params = LoginParams(username=username, password=password)
@@ -146,20 +174,6 @@ class NMS:
         if response:
             return LoginResponse(
                 token=response.get("token"),
-            )
-        return None
-
-    def token_is_valid(self, token: str) -> bool:
-        """Return if the token is still valid by attempting to connect to an endpoint."""
-        response = self._make_request("GET", f"/{ACCOUNTS_URL}/me", token=token)
-        return response is not None
-
-    def get_status(self) -> StatusResponse | None:
-        """Return if NMS is initialized."""
-        response = self._make_request("GET", "/status")
-        if response:
-            return StatusResponse(
-                initialized=response.get("initialized"),
             )
         return None
 
