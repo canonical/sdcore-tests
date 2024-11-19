@@ -70,9 +70,9 @@ class TestSDCoreBundle:
         self, configure_traefik_external_hostname
     ):
         nms_url = self._get_nms_url()
-        network_configuration_resp = requests.get(f"{nms_url}/network-configuration")
+        network_configuration_resp = requests.get(f"{nms_url}/network-configuration", verify=False)
         network_configuration_resp.raise_for_status()
-        subscribers_resp = requests.get(f"{nms_url}/subscribers")
+        subscribers_resp = requests.get(f"{nms_url}/subscribers", verify=False)
         subscribers_resp.raise_for_status()
 
     @pytest.mark.abort_on_fail

@@ -62,8 +62,8 @@ class Nms:
             imsi (str): Subscriber's IMSI
         """
         SUBSCRIBER_CONFIG["UeId"] = imsi
-        url = f"http://{self.nms_ip}:5000/api/subscriber/imsi-{imsi}"
-        response = requests.post(url=url, data=json.dumps(SUBSCRIBER_CONFIG))
+        url = f"https://{self.nms_ip}:5000/api/subscriber/imsi-{imsi}"
+        response = requests.post(url=url, data=json.dumps(SUBSCRIBER_CONFIG), verify=False)
         response.raise_for_status()
         logger.info(f"Created subscriber with IMSI {imsi}.")
 
@@ -75,13 +75,13 @@ class Nms:
             imsis (list): List of IMSIs to be included in the device group
         """
         DEVICE_GROUP_CONFIG["imsis"] = imsis
-        url = f"http://{self.nms_ip}:5000/config/v1/device-group/{device_group_name}"
-        response = requests.post(url, json=DEVICE_GROUP_CONFIG)
+        url = f"https://{self.nms_ip}:5000/config/v1/device-group/{device_group_name}"
+        response = requests.post(url, json=DEVICE_GROUP_CONFIG, verify=False)
         response.raise_for_status()
         now = time.time()
         timeout = 5
         while time.time() - now <= timeout:
-            if requests.get(url).json():
+            if requests.get(url, verify=False).json():
                 logger.info(f"Created device group {device_group_name}.")
                 return
             else:
@@ -96,13 +96,13 @@ class Nms:
             device_groups (list): List of device groups to be included in the network slice
         """
         NETWORK_SLICE_CONFIG["site-device-group"] = device_groups
-        url = f"http://{self.nms_ip}:5000/config/v1/network-slice/{network_slice_name}"
-        response = requests.post(url, json=NETWORK_SLICE_CONFIG)
+        url = f"https://{self.nms_ip}:5000/config/v1/network-slice/{network_slice_name}"
+        response = requests.post(url, json=NETWORK_SLICE_CONFIG, verify=False)
         response.raise_for_status()
         now = time.time()
         timeout = 5
         while time.time() - now <= timeout:
-            if requests.get(url).json():
+            if requests.get(url, verify=False).json():
                 logger.info(f"Created network slice {network_slice_name}.")
                 return
             else:
