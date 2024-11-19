@@ -7,7 +7,7 @@ import logging
 import time
 from contextlib import contextmanager
 from subprocess import CalledProcessError, call, check_output
-from typing import Optional
+from typing import Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -175,6 +175,50 @@ def set_application_config(model_name: str, application_name: str, config: dict)
                     f"Failed to set {model_key}={value} config for {application_name}"
                 ) from e
     juju_wait_for_active_idle(model_name, 60)
+
+
+def _get_juju_secret_id(model_name: str, juju_secret_label: str) -> Optional[str]:
+    with juju_context(model_name):
+        cmd_out = check_output(["juju", "secrets", "--format=json"]).decode()
+        for key, value in json.loads(cmd_out):
+            if value["label"] == juju_secret_label:
+                return key
+    return None
+
+
+def get_nms_credentials(
+    model_name: str, juju_secret_label: str
+) -> Tuple[Optional[str], Optional[str]]:
+    """Get NMS credentials from Juju secret.
+
+    The NMS secret has the following format:
+    {
+        "csuci57mp25c7993rgeg": {
+            "revision": 1,
+            "owner": "notary-k8s",
+            "label": "Notary Login Details",
+            "created": "2024-11-19T17:21:25Z",
+            "updated": "2024-11-19T17:21:25Z",
+            "content": {
+            "Data": {
+                "password": "whatever-password",
+                "token": "whatever-token",
+                "username": "whatever-username"
+            }
+            }
+        }
+    }
+    """
+    secret_id = _get_juju_secret_id(model_name, juju_secret_label)
+    if not secret_id:
+        logger.warning("could not find secret with label %s", juju_secret_label)
+        return None, None
+    with juju_context(model_name):
+        cmd_out = check_output(
+            ["juju", "show-secret", "--reveal", "--format=json", secret_id]
+        ).decode()
+        secret_content = json.loads(cmd_out)[secret_id]["content"]["Data"]
+        return secret_content.get("username"), secret_content.get("password")
 
 
 @contextmanager
