@@ -81,11 +81,10 @@ class LoginResponse:
 class NMS:
     """Handle NMS API calls."""
 
-    def __init__(self, url: str, ca_certificate_path: str = ""):
+    def __init__(self, url: str):
         if url.endswith("/"):
             url = url[:-1]
         self.url = url
-        self._ca_certificate_path = ca_certificate_path
 
     def _make_request(
         self,
@@ -105,7 +104,7 @@ class NMS:
                 url=url,
                 headers=headers,
                 json=data,
-                verify=self._ca_certificate_path or False,
+                verify=False,
             )
         except requests.exceptions.SSLError as e:
             logger.error("SSL error: %s", e)
