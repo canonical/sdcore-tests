@@ -12,7 +12,7 @@ from typing import Optional, Tuple
 logger = logging.getLogger(__name__)
 
 
-def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10):
+def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 30):
     """Wait for all application in a given model to be become Active-Idle.
 
     Args:
