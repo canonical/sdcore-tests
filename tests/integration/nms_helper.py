@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
-# Copyright 2023 Canonical Ltd.
+# Copyright 2024 Canonical Ltd.
 # See LICENSE file for licensing details.
+
+"""Module use to handle NMS API calls."""
 
 import json
 import logging
 import time
+from dataclasses import asdict, dataclass
+from typing import Any, List, Optional
 
 import requests
 
 logger = logging.getLogger(__name__)
+
+ACCOUNTS_URL = "config/v1/account"
+
+JSON_HEADER = {"Content-Type": "application/json"}
 
 SUBSCRIBER_CONFIG = {
     "UeId": "PLACEHOLDER",
@@ -17,6 +25,7 @@ SUBSCRIBER_CONFIG = {
     "key": "5122250214c33e723a5dd523fc145fc0",
     "sequenceNumber": "16f3b3f70fc2",
 }
+
 DEVICE_GROUP_CONFIG = {
     "imsis": [],
     "site-info": "demo",
@@ -34,6 +43,8 @@ DEVICE_GROUP_CONFIG = {
         },
     },
 }
+
+
 NETWORK_SLICE_CONFIG = {
     "slice-id": {"sst": "1", "sd": "102030"},
     "site-device-group": [],
@@ -46,65 +57,144 @@ NETWORK_SLICE_CONFIG = {
 }
 
 
-class Nms:
-    def __init__(self, nms_ip: str) -> None:
-        """Construct the NMS class.
+@dataclass
+class StatusResponse:
+    """Response from NMS when checking the status."""
 
-        Args:
-            nms_ip (str): IP address of the NMS application unit
-        """
-        self.nms_ip = nms_ip
+    initialized: bool
 
-    def create_subscriber(self, imsi: str) -> None:
-        """Create a subscriber.
 
-        Args:
-            imsi (str): Subscriber's IMSI
-        """
-        SUBSCRIBER_CONFIG["UeId"] = imsi
-        url = f"https://{self.nms_ip}:5000/api/subscriber/imsi-{imsi}"
-        response = requests.post(url=url, data=json.dumps(SUBSCRIBER_CONFIG), verify=False)
-        response.raise_for_status()
+@dataclass
+class LoginParams:
+    """Parameters to login to NMS."""
+
+    username: str
+    password: str
+
+
+@dataclass
+class LoginResponse:
+    """Response from NMS when logging in."""
+
+    token: str
+
+
+class NMS:
+    """Handle NMS API calls."""
+
+    def __init__(self, url: str):
+        if url.endswith("/"):
+            url = url[:-1]
+        self.url = url
+
+    def _make_request(
+        self,
+        method: str,
+        endpoint: str,
+        token: Optional[str] = None,
+        data: any = None,  # type: ignore[reportGeneralTypeIssues]
+    ) -> Any | None:
+        """Make an HTTP request and handle common error patterns."""
+        headers = JSON_HEADER
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        url = f"{self.url}{endpoint}"
+        try:
+            response = requests.request(
+                method=method,
+                url=url,
+                headers=headers,
+                json=data,
+                verify=False,
+            )
+        except requests.exceptions.SSLError as e:
+            logger.error("SSL error: %s", e)
+            return None
+        except requests.RequestException as e:
+            logger.error("HTTP request failed: %s", e)
+            return None
+        except OSError as e:
+            logger.error("couldn't complete HTTP request: %s", e)
+            return None
+        try:
+            response.raise_for_status()
+        except requests.HTTPError:
+            logger.error(
+                "Request failed: code %s",
+                response.status_code,
+            )
+            return None
+        try:
+            json_response = response.json()
+        except json.JSONDecodeError:
+            return None
+        return json_response
+
+    def is_initialized(self) -> bool:
+        """Return if NMS is initialized."""
+        status = self.get_status()
+        return status.initialized if status else False
+
+    def is_api_available(self) -> bool:
+        """Return if NMS is reachable."""
+        status = self.get_status()
+        return status is not None
+
+    def get_status(self) -> StatusResponse | None:
+        """Return if NMS is initialized."""
+        response = self._make_request("GET", "/status")
+        if response:
+            return StatusResponse(
+                initialized=response.get("initialized"),
+            )
+        return None
+
+    def wait_for_api_to_be_available(self, timeout: int = 300) -> None:
+        """Wait for NMS API to be available."""
+        t0 = time.time()
+        while time.time() - t0 < timeout:
+            if self.is_api_available():
+                return
+            time.sleep(5)
+        raise TimeoutError(f"NMS API is not available after {timeout} seconds.")
+
+    def wait_for_initialized(self, timeout: int = 300) -> None:
+        """Wait for NMS to be initialized."""
+        t0 = time.time()
+        while time.time() - t0 < timeout:
+            if self.is_initialized():
+                return
+            time.sleep(5)
+        raise TimeoutError(f"NMS is not initialized after {timeout} seconds.")
+
+    def login(self, username: str, password: str) -> LoginResponse | None:
+        """Login to NMS by sending the username and password and return a Token."""
+        login_params = LoginParams(username=username, password=password)
+        response = self._make_request("POST", "/login", data=asdict(login_params))
+        if response:
+            return LoginResponse(
+                token=response.get("token"),
+            )
+        return None
+
+    def create_subscriber(self, imsi: str, token: str) -> None:
+        """Create a subscriber."""
+        url = f"/api/subscriber/imsi-{imsi}"
+        data = SUBSCRIBER_CONFIG.copy()
+        data["UeId"] = imsi
+        self._make_request("POST", url, token=token, data=data)
         logger.info(f"Created subscriber with IMSI {imsi}.")
 
-    def create_device_group(self, device_group_name: str, imsis: list) -> None:
-        """Create a device group.
-
-        Args:
-            device_group_name (str): Device group name
-            imsis (list): List of IMSIs to be included in the device group
-        """
+    def create_device_group(self, name: str, imsis: List[str], token: str) -> None:
+        """Create a device group."""
         DEVICE_GROUP_CONFIG["imsis"] = imsis
-        url = f"https://{self.nms_ip}:5000/config/v1/device-group/{device_group_name}"
-        response = requests.post(url, json=DEVICE_GROUP_CONFIG, verify=False)
-        response.raise_for_status()
-        now = time.time()
-        timeout = 5
-        while time.time() - now <= timeout:
-            if requests.get(url, verify=False).json():
-                logger.info(f"Created device group {device_group_name}.")
-                return
-            else:
-                time.sleep(1)
-        raise TimeoutError("Timed out creating device group.")
+        url = f"/config/v1/device-group/{name}"
+        self._make_request("POST", url, token=token, data=DEVICE_GROUP_CONFIG)
+        logger.info(f"Created device group {name}.")
 
-    def create_network_slice(self, network_slice_name: str, device_groups: list) -> None:
-        """Create a network slice.
-
-        Args:
-            network_slice_name (str): Network slice name
-            device_groups (list): List of device groups to be included in the network slice
-        """
+    def create_network_slice(self, name: str, device_groups: List[str], token: str) -> None:
+        """Create a network slice."""
         NETWORK_SLICE_CONFIG["site-device-group"] = device_groups
-        url = f"https://{self.nms_ip}:5000/config/v1/network-slice/{network_slice_name}"
-        response = requests.post(url, json=NETWORK_SLICE_CONFIG, verify=False)
-        response.raise_for_status()
-        now = time.time()
-        timeout = 5
-        while time.time() - now <= timeout:
-            if requests.get(url, verify=False).json():
-                logger.info(f"Created network slice {network_slice_name}.")
-                return
-            else:
-                time.sleep(1)
-        raise TimeoutError("Timed out creating network slice.")
+        url = f"/config/v1/network-slice/{name}"
+        self._make_request("POST", url, token=token, data=NETWORK_SLICE_CONFIG)
+        logger.info(f"Created network slice {name}.")

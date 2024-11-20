@@ -14,7 +14,7 @@ from jinja2 import Environment, FileSystemLoader
 from requests.auth import HTTPBasicAuth
 
 from tests.integration import juju_helper
-from tests.integration.nms_helper import Nms
+from tests.integration.nms_helper import NMS
 from tests.integration.terraform_helper import TerraformClient
 
 logger = logging.getLogger(__name__)
@@ -27,6 +27,7 @@ TFVARS_FILE = "integration_tests.auto.tfvars"
 TEST_DEVICE_GROUP_NAME = "default-default"
 TEST_IMSI = "001010100007487"
 TEST_NETWORK_SLICE_NAME = "default"
+NMS_CREDENTIALS_LABEL = "NMS_LOGIN"
 
 
 class TestSDCoreBundle:
@@ -45,8 +46,15 @@ class TestSDCoreBundle:
 
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
-        self, configure_sdcore
+        self,
     ):
+        username, password = juju_helper.wait_for_nms_credentials(
+            model_name=SDCORE_MODEL_NAME,
+            juju_secret_label=NMS_CREDENTIALS_LABEL,
+        )
+        if not username or not password:
+            raise Exception("NMS credentials not found.")
+        configure_sdcore(username, password)
         for _ in range(5):
             action_output = juju_helper.juju_run_action(
                 model_name=RAN_MODEL_NAME,
@@ -146,27 +154,41 @@ class TestSDCoreBundle:
         return action_output["url"], action_output["admin-password"]
 
 
-@pytest.fixture(scope="module")
 @pytest.mark.abort_on_fail
-def configure_sdcore():
+def configure_sdcore(username: str, password: str) -> None:
     """Configure Charmed SD-Core.
 
     Configuration includes:
     - subscriber creation
     - device group creation
     - network slice creation
+
+    Args:
+        username (str): NMS username
+        password (str): NMS password
     """
     nms_ip_address = juju_helper.get_unit_address(
         model_name=SDCORE_MODEL_NAME,
         application_name="nms",
         unit_number=0,
     )
-    nms_client = Nms(nms_ip_address)
-    nms_client.create_subscriber(TEST_IMSI)
-    nms_client.create_device_group(TEST_DEVICE_GROUP_NAME, [TEST_IMSI])
-    nms_client.create_network_slice(TEST_NETWORK_SLICE_NAME, [TEST_DEVICE_GROUP_NAME])
-    # 5 seconds for the config to propagate
-    time.sleep(5)
+    nms_client = NMS(url=f"https://{nms_ip_address}:5000")
+    nms_client.wait_for_api_to_be_available()
+    nms_client.wait_for_initialized()
+    login_response = nms_client.login(username=username, password=password)
+    if not login_response or not login_response.token:
+        raise Exception("Failed to login to NMS.")
+    nms_client.create_subscriber(imsi=TEST_IMSI, token=login_response.token)
+    nms_client.create_device_group(
+        name=TEST_DEVICE_GROUP_NAME, imsis=[TEST_IMSI], token=login_response.token
+    )
+    nms_client.create_network_slice(
+        name=TEST_NETWORK_SLICE_NAME,
+        device_groups=[TEST_DEVICE_GROUP_NAME],
+        token=login_response.token,
+    )
+    # 60 seconds for the config to propagate
+    time.sleep(60)
 
 
 @pytest.fixture(scope="module")
