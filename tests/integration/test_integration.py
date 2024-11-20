@@ -187,8 +187,8 @@ def configure_sdcore(username: str, password: str) -> None:
         device_groups=[TEST_DEVICE_GROUP_NAME],
         token=login_response.token,
     )
-    # 5 seconds for the config to propagate
-    time.sleep(5)
+    # 60 seconds for the config to propagate
+    time.sleep(60)
 
 
 @pytest.fixture(scope="module")
