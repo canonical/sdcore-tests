@@ -188,13 +188,13 @@ class NMS:
     def create_device_group(self, name: str, imsis: List[str], token: str) -> None:
         """Create a device group."""
         DEVICE_GROUP_CONFIG["imsis"] = imsis
-        url = f"/{DEVICE_GROUP_CONFIG}/{name}"
+        url = f"/config/v1/device-group/{name}"
         self._make_request("POST", url, token=token, data=DEVICE_GROUP_CONFIG)
         logger.info(f"Created device group {name}.")
 
     def create_network_slice(self, name: str, device_groups: List[str], token: str) -> None:
         """Create a network slice."""
         NETWORK_SLICE_CONFIG["site-device-group"] = device_groups
-        url = f"/{NETWORK_SLICE_CONFIG}/{name}"
+        url = f"/config/v1/network-slice/{name}"
         self._make_request("POST", url, token=token, data=NETWORK_SLICE_CONFIG)
         logger.info(f"Created network slice {name}.")
