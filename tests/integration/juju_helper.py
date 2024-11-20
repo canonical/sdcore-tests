@@ -197,7 +197,7 @@ def _get_juju_secret_id(model_name: str, juju_secret_label: str) -> Optional[str
     """
     with juju_context(model_name):
         cmd_out = check_output(["juju", "secrets", "--format=json"]).decode()
-        for key, value in json.loads(cmd_out):
+        for key, value in json.loads(cmd_out).items():
             if value["label"] == juju_secret_label:
                 return key
     return None
