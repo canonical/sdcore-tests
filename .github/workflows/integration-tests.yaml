@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo snap install concierge --classic
           sudo concierge prepare -p microk8s --microk8s-channel "1.31-strict/stable" --juju-channel "3.5/stable" --lxd-channel "5.21/stable" --extra-snaps astral-uv/latest/stable
-          sudo microk8s enable hostpath-storage dns metallb:10.0.0.2-10.0.0.10
+#          sudo microk8s enable hostpath-storage dns metallb:10.0.0.2-10.0.0.10
           uv tool install tox --with tox-uv
           sudo snap install juju-crashdump --classic
 

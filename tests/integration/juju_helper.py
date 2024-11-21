@@ -12,7 +12,7 @@ from typing import Optional, Tuple
 logger = logging.getLogger(__name__)
 
 
-def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 30):
+def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10):
     """Wait for all application in a given model to be become Active-Idle.
 
     Args:
@@ -44,6 +44,7 @@ def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 30
             logger.info("Deployment is ready!")
             logger.info(check_output(["juju", "status"]).decode())
             return
+        logger.error(check_output(["juju", "status"]).decode())
         raise TimeoutError("Timed out waiting for Juju model to be ready!")
 
 
