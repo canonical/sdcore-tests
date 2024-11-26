@@ -6,14 +6,14 @@ resource "juju_model" "sdcore" {
 }
 
 module "sdcore-router" {
-  source = "git::https://github.com/canonical/sdcore-router-k8s-operator//terraform"
+  source = "git::https://github.com/canonical/sdcore-router-k8s-operator//terraform?ref=v1.5"
 
   model      = juju_model.sdcore.name
   depends_on = [juju_model.sdcore]
 }
 
 module "sdcore" {
-  source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-k8s"
+  source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-k8s?ref=v1.5"
 
   model = juju_model.sdcore.name
 
@@ -25,7 +25,7 @@ resource "juju_model" "ran-simulator" {
 }
 
 module "gnbsim" {
-  source = "git::https://github.com/canonical/sdcore-gnbsim-k8s-operator//terraform"
+  source = "git::https://github.com/canonical/sdcore-gnbsim-k8s-operator//terraform?ref=v1.5"
 
   model      = juju_model.ran-simulator.name
   depends_on = [module.sdcore-router]

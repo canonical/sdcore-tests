@@ -1,12 +1,10 @@
-name: CI workflow on push
+name: Release 1.5 CI
 
 on:
   push:
   pull_request:
     branches:
-      - main
-  schedule:
-    - cron: '0 2 * * *'
+      - v1.5
 
 jobs:
   codeql:
@@ -24,14 +22,14 @@ jobs:
 
   create-issue:
     runs-on: ubuntu-latest
-    if: ${{ always() && github.ref_name == 'main' && contains(join(needs.*.result, ','), 'failure') }}
+    if: ${{ always() && github.ref_name == 'v1.5' && contains(join(needs.*.result, ','), 'failure') }}
     needs: [ lint-report, static-analysis, integration-test ]
     steps:
       - name: Check whether the issue already exists
         id: check-issue
         continue-on-error: true
         run: |
-          if curl -L -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/$GITHUB_REPOSITORY/issues | grep "Main - CI run failed"; then
+          if curl -L -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/$GITHUB_REPOSITORY/issues | grep "Release 1.5 - CI run failed"; then
             echo ISSUE_EXISTS="True" >> $GITHUB_OUTPUT
           else
             echo ISSUE_EXISTS="False" >> $GITHUB_OUTPUT
@@ -42,7 +40,7 @@ jobs:
         uses: dacbd/create-issue-action@v2.0.0
         with:
           token: ${{ github.token }}
-          title: "[sdcore-tests] Main - CI run failed"
+          title: "[sdcore-tests] Release 1.5 - CI run failed"
           body: |
             ### Context
             [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
