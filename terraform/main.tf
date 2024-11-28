@@ -9,25 +9,27 @@ module "sdcore-router" {
   source = "git::https://github.com/canonical/sdcore-router-k8s-operator//terraform?ref=v1.5"
 
   model      = juju_model.sdcore.name
+  channel    = "1.5/edge"
   depends_on = [juju_model.sdcore]
 }
 
 module "sdcore" {
   source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-k8s?ref=v1.5"
 
-  model = juju_model.sdcore.name
-
-  depends_on = [module.sdcore-router]
+  model          = juju_model.sdcore.name
+  sdcore_channel = "1.5/edge"
+  depends_on     = [module.sdcore-router]
 }
 
 resource "juju_model" "ran-simulator" {
-  name = "ran"
+  name = var.ran_model_name
 }
 
 module "gnbsim" {
   source = "git::https://github.com/canonical/sdcore-gnbsim-k8s-operator//terraform?ref=v1.5"
 
   model      = juju_model.ran-simulator.name
+  channel    = "1.5/edge"
   depends_on = [module.sdcore-router]
 }
 
@@ -64,10 +66,10 @@ resource "juju_integration" "gnbsim-nms" {
 }
 
 module "cos" {
-  source                   = "git::https://github.com/canonical/terraform-juju-sdcore//modules/external/cos-lite"
-  model_name               = "cos-lite"
-  deploy_cos_configuration = true
-  cos_configuration_config = {
+  source                    = "git::https://github.com/canonical/terraform-juju-sdcore//modules/external/cos-lite"
+  model_name                = "cos-lite"
+  deploy_cos_configuration  = true
+  cos_configuration_config  = {
     git_repo                = "https://github.com/canonical/sdcore-cos-configuration"
     git_branch              = "main"
     grafana_dashboards_path = "grafana_dashboards/sdcore/"
