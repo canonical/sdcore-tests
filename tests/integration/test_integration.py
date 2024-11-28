@@ -117,6 +117,7 @@ class TestSDCoreBundle:
         template = jinja2_environment.get_template(f"{TFVARS_FILE}.j2")
         content = template.render(
             sdcore_model_name=SDCORE_MODEL_NAME,
+            ran_model_name=RAN_MODEL_NAME,
         )
         with open(f"{TERRAFORM_DIR}/{TFVARS_FILE}", mode="w") as tfvars:
             tfvars.write(content)
