@@ -41,8 +41,8 @@ class TestSDCoreBundle:
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_terraform_module_when_deploy_then_status_is_active(self):
         self._deploy_sdcore()
-        juju_helper.juju_wait_for_active_idle(model_name=SDCORE_MODEL_NAME, timeout=1200)
-        juju_helper.juju_wait_for_active_idle(model_name=RAN_MODEL_NAME, timeout=1200)
+        juju_helper.juju_wait_for_active_idle(model_name=SDCORE_MODEL_NAME, timeout=900)
+        juju_helper.juju_wait_for_active_idle(model_name=RAN_MODEL_NAME, timeout=300)
 
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
@@ -55,20 +55,14 @@ class TestSDCoreBundle:
         if not username or not password:
             raise Exception("NMS credentials not found.")
         configure_sdcore(username, password)
-        for _ in range(5):
-            action_output = juju_helper.juju_run_action(
-                model_name=RAN_MODEL_NAME,
-                application_name="gnbsim",
-                unit_number=0,
-                action_name="start-simulation",
-                timeout=6 * 60,
-            )
-            try:
-                assert action_output["success"] == "true"
-                return
-            except AssertionError:
-                continue
-        assert False
+        action_output = juju_helper.juju_run_action(
+            model_name=RAN_MODEL_NAME,
+            application_name="gnbsim",
+            unit_number=0,
+            action_name="start-simulation",
+            timeout=6 * 60,
+        )
+        assert action_output["success"] == "true"
 
     @pytest.mark.skip(
         reason="Traefik issue: https://github.com/canonical/traefik-k8s-operator/issues/361"
@@ -117,6 +111,7 @@ class TestSDCoreBundle:
         template = jinja2_environment.get_template(f"{TFVARS_FILE}.j2")
         content = template.render(
             sdcore_model_name=SDCORE_MODEL_NAME,
+            ran_model_name=RAN_MODEL_NAME,
         )
         with open(f"{TERRAFORM_DIR}/{TFVARS_FILE}", mode="w") as tfvars:
             tfvars.write(content)

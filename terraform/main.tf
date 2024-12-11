@@ -21,7 +21,7 @@ module "sdcore" {
 }
 
 resource "juju_model" "ran-simulator" {
-  name = "ran"
+  name = var.ran_model_name
 }
 
 module "gnbsim" {
@@ -29,12 +29,6 @@ module "gnbsim" {
 
   model      = juju_model.ran-simulator.name
   depends_on = [module.sdcore-router]
-}
-
-resource "juju_offer" "gnbsim-fiveg-gnb-identity" {
-  model            = juju_model.ran-simulator.name
-  application_name = module.gnbsim.app_name
-  endpoint         = module.gnbsim.provides.fiveg_gnb_identity
 }
 
 resource "juju_integration" "gnbsim-amf" {
@@ -51,15 +45,15 @@ resource "juju_integration" "gnbsim-amf" {
 }
 
 resource "juju_integration" "gnbsim-nms" {
-  model = juju_model.sdcore.name
+  model = juju_model.ran-simulator.name
 
   application {
-    name     = module.sdcore.nms_app_name
-    endpoint = module.sdcore.fiveg_gnb_identity_endpoint
+    name     = module.gnbsim.app_name
+    endpoint = module.gnbsim.requires.fiveg_core_gnb
   }
 
   application {
-    offer_url = juju_offer.gnbsim-fiveg-gnb-identity.url
+    offer_url = module.sdcore.nms_fiveg_core_gnb_offer_url
   }
 }
 
