@@ -42,7 +42,6 @@ class TestSDCoreBundle:
     async def test_given_sdcore_terraform_module_when_deploy_then_status_is_active(self):
         self._deploy_sdcore()
         juju_helper.juju_wait_for_active_idle(model_name=SDCORE_MODEL_NAME, timeout=900)
-        juju_helper.juju_wait_for_active_idle(model_name=RAN_MODEL_NAME, timeout=300)
 
     @pytest.mark.abort_on_fail
     async def test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true(  # noqa: E501
@@ -55,6 +54,7 @@ class TestSDCoreBundle:
         if not username or not password:
             raise Exception("NMS credentials not found.")
         configure_sdcore(username, password)
+        juju_helper.juju_wait_for_active_idle(model_name=RAN_MODEL_NAME, timeout=300)
         action_output = juju_helper.juju_run_action(
             model_name=RAN_MODEL_NAME,
             application_name="gnbsim",

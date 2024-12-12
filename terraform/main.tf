@@ -16,6 +16,7 @@ module "sdcore" {
   source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-k8s"
 
   model = juju_model.sdcore.name
+  nms_revision = 786
 
   depends_on = [module.sdcore-router]
 }

@@ -44,6 +44,7 @@ def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10
             logger.info("Deployment is ready!")
             logger.info(check_output(["juju", "status"]).decode())
             return
+        logger.info(check_output(["juju", "status"]).decode())
         raise TimeoutError("Timed out waiting for Juju model to be ready!")
 
 
