@@ -29,6 +29,9 @@ module "gnbsim" {
 
   model      = juju_model.ran-simulator.name
   revision   = 643
+  resources  = {
+    "gnbsim-image": "ghcr.io/canonical/sdcore-gnbsim:1.6.0"
+  }
   depends_on = [module.sdcore-router]
 }
 
