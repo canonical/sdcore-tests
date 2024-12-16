@@ -28,10 +28,7 @@ module "gnbsim" {
   source = "git::https://github.com/canonical/sdcore-gnbsim-k8s-operator//terraform"
 
   model      = juju_model.ran-simulator.name
-  revision   = 643
-  resources  = {
-    "gnbsim-image": "ghcr.io/canonical/sdcore-gnbsim:1.6.0"
-  }
+
   depends_on = [module.sdcore-router]
 }
 
