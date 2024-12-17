@@ -5,7 +5,7 @@ resource "juju_model" "sdcore" {
   name = var.sdcore_model_name
 
   config = {
-    default-base = "noble"
+    default-base = "ubuntu@24.04"
   }
 }
 
@@ -28,7 +28,7 @@ resource "juju_model" "ran-simulator" {
   name = var.ran_model_name
 
   config = {
-    default-base = "noble"
+    default-base = "ubuntu@24.04"
   }
 }
 
