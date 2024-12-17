@@ -3,10 +3,6 @@
 
 resource "juju_model" "sdcore" {
   name = var.sdcore_model_name
-
-  config = {
-    default-base = "ubuntu@24.04"
-  }
 }
 
 module "sdcore-router" {
@@ -26,10 +22,6 @@ module "sdcore" {
 
 resource "juju_model" "ran-simulator" {
   name = var.ran_model_name
-
-  config = {
-    default-base = "ubuntu@24.04"
-  }
 }
 
 module "gnbsim" {
