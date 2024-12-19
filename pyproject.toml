@@ -1,3 +1,18 @@
+[project]
+name = "sdcore-tests"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+dependencies = [
+    "codespell",
+    "jinja2",
+    "juju",
+    "pyright",
+    "pytest",
+    "pytest-operator",
+    "ruff",
+]
+
 # Testing tools configuration
 [tool.coverage.run]
 branch = true
