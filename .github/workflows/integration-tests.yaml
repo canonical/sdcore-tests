@@ -21,6 +21,12 @@ jobs:
           channel: 1.31-strict/stable
           microk8s-addons: "hostpath-storage dns metallb:10.0.0.2-10.0.0.10"
 
+      - name: Install UV and Tox
+        run: |
+          pipx uninstall tox
+          sudo snap install astral-uv --classic
+          uv tool install tox --with tox-uv --force
+
       - name: Enable Multus addon
         continue-on-error: true
         run: |
@@ -33,23 +39,29 @@ jobs:
         run: tox -vve integration
 
       - name: Gather logs
-        if: always()
+        if: failure()
         run: |
           juju-crashdump -m sdcore
+          juju-crashdump -m ran
           for pod in $(sudo microk8s.kubectl -n sdcore get pods -o json | jq .items[].metadata.name | tr -d '"'); do
-           sudo  microk8s.kubectl -n sdcore logs $pod --all-containers > pod-$pod.log
+           sudo  microk8s.kubectl -n sdcore logs $pod --all-containers > sdcore-$pod.log
+          done
+          for pod in $(sudo microk8s.kubectl -n ran get pods -o json | jq .items[].metadata.name | tr -d '"'); do
+           sudo  microk8s.kubectl -n ran logs $pod --all-containers > ran-$pod.log
           done
 
       - name: Archive juju crashdump
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: juju-crashdump
           path: juju-crashdump-*.tar.xz
 
       - name: Archive k8s logs
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: k8s-logs
-          path: pod-*.log
+          path: |
+            sdcore-*.log
+            ran-*.log
