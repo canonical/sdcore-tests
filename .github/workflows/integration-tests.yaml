@@ -29,6 +29,12 @@ jobs:
           channel: 1.31-strict/stable
           microk8s-addons: "hostpath-storage dns metallb:10.0.0.2-10.0.0.10"
 
+      - name: Install UV and Tox
+        run: |
+          pipx uninstall tox
+          sudo snap install astral-uv --classic
+          uv tool install tox --with tox-uv --force
+
       - name: Enable Multus addon
         continue-on-error: true
         run: |
