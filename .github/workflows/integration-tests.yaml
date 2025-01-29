@@ -52,25 +52,24 @@ jobs:
         continue-on-error: true
         with:
           ref: gh-pages
-          path: gh-pages/main
+          path: gh-pages
 
       - name: Build test report
-        uses: simple-elf/allure-report-action@v1.11
+        uses: mgrybyk-org/allure-report-branch-action@v1
         if: always()
+        continue-on-error: true
         with:
-          gh_pages: gh-pages/main
-          allure_history: allure-history
-          allure_results: allure-results
-      #dummy
+          report_id: sdcore-tests
+          gh_pages: gh-pages
+          report_dir: allure-results
 
       - name: Publish test report
-        uses: peaceiris/actions-gh-pages@v4
+        uses: mgrybyk-org/git-commit-pull-push-action@v1
         if: always()
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-          destination_dir: main
+          repository: gh-pages
+          branch: gh-pages
+          pull_args: --rebase -X ours
 
       - name: Gather logs
         if: failure()
