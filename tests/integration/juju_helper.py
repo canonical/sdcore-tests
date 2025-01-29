@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10):
     """Wait for all application in a given model to be become Active-Idle.
 
+    Dummy change.
+
     Args:
         model_name(str): Juju model name
         timeout(int): Time to wait for the applications to become Active-Idle
