@@ -62,7 +62,7 @@ jobs:
           report_id: sdcore-tests
           gh_pages: gh-pages
           report_dir: allure-results
-
+      #dummy
       - name: Publish test report
         uses: mgrybyk-org/git-commit-pull-push-action@v1
         if: always()
