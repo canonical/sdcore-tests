@@ -52,7 +52,7 @@ jobs:
         continue-on-error: true
         with:
           ref: gh-pages
-          path: gh-pages
+          path: gh-pages/main
 
       - name: Build test report
         uses: simple-elf/allure-report-action@v1.11
@@ -67,7 +67,7 @@ jobs:
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
+          publish_branch: gh-pages/main
           publish_dir: allure-history
 
       - name: Gather logs
