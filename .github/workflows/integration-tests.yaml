@@ -67,8 +67,9 @@ jobs:
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages/main
+          publish_branch: gh-pages
           publish_dir: allure-history
+          destination_dir: main
 
       - name: Gather logs
         if: failure()
