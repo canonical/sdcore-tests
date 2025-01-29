@@ -61,6 +61,7 @@ jobs:
           gh_pages: gh-pages/main
           allure_history: allure-history
           allure_results: allure-results
+      #dummy
 
       - name: Publish test report
         uses: peaceiris/actions-gh-pages@v4
