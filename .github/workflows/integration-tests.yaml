@@ -58,7 +58,7 @@ jobs:
         uses: simple-elf/allure-report-action@v1.11
         if: always()
         with:
-          gh_pages: gh-pages/${{ inputs.branch-name }}
+          gh_pages: gh-pages/main
           allure_history: allure-history
           allure_results: allure-results
 
