@@ -58,6 +58,7 @@ jobs:
         uses: mgrybyk-org/allure-report-branch-action@v1
         if: always()
         continue-on-error: true
+        id: allure
         with:
           report_id: sdcore-tests
           gh_pages: gh-pages
@@ -70,6 +71,16 @@ jobs:
           repository: gh-pages
           branch: gh-pages
           pull_args: --rebase -X ours
+
+      - name: Comment PR with Allure Report link
+        if: ${{ always() && steps.allure.outputs.report_url }}
+        continue-on-error: true
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ${{ steps.allure.outputs.test_result_icon }} [Allure Report](${{ steps.allure.outputs.report_url }}) | [History](${{ steps.allure.outputs.report_history_url }})
+          comment_tag: allure_report
+          mode: recreate
 
       - name: Gather logs
         if: failure()
