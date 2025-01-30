@@ -55,20 +55,32 @@ jobs:
           path: gh-pages
 
       - name: Build test report
-        uses: simple-elf/allure-report-action@v1.11
+        uses: mgrybyk-org/allure-report-branch-action@v1
         if: always()
+        continue-on-error: true
+        id: allure
         with:
+          report_id: sdcore-tests
           gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: allure-results
+          report_dir: allure-results
 
       - name: Publish test report
-        uses: peaceiris/actions-gh-pages@v4
+        uses: mgrybyk-org/git-commit-pull-push-action@v1
         if: always()
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
+          repository: gh-pages
+          branch: gh-pages
+          pull_args: --rebase -X ours
+
+      - name: Comment PR with Allure Report link
+        if: ${{ always() && steps.allure.outputs.report_url }}
+        continue-on-error: true
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ${{ steps.allure.outputs.test_result_icon }} [Allure Report](${{ steps.allure.outputs.report_url }}) | [History](${{ steps.allure.outputs.report_history_url }})
+          comment_tag: allure_report
+          mode: recreate
 
       - name: Gather logs
         if: failure()
