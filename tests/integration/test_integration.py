@@ -13,8 +13,7 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from requests.auth import HTTPBasicAuth
 
-from tests.integration import juju_helper
-from tests.integration import k8s_helper
+from tests.integration import juju_helper, k8s_helper
 from tests.integration.nms_helper import NMS
 from tests.integration.terraform_helper import TerraformClient
 
