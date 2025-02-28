@@ -48,27 +48,6 @@ def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10
         raise TimeoutError("Timed out waiting for Juju model to be ready!")
 
 
-def get_application_address(model_name: str, application_name: str) -> str:
-    """Get Juju application IP address.
-
-    Args:
-        model_name(str): Juju model name
-        application_name(str): Juju application name
-
-    Returns:
-        str: Juju application IP address
-
-    Raises:
-        JujuError: Custom error raised when getting application address fails
-    """
-    with juju_context(model_name):
-        status = juju_status(application_name)
-        try:
-            return status[application_name].get("address")
-        except KeyError as e:
-            raise JujuError(f"Failed to get IP address of {application_name}!") from e
-
-
 def get_unit_address(model_name: str, application_name: str, unit_number: int) -> str:
     """Get Juju application unit IP address.
 

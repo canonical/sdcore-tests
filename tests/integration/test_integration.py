@@ -13,7 +13,7 @@ import requests
 from jinja2 import Environment, FileSystemLoader
 from requests.auth import HTTPBasicAuth
 
-from tests.integration import juju_helper
+from tests.integration import juju_helper, k8s_helper
 from tests.integration.nms_helper import NMS
 from tests.integration.terraform_helper import TerraformClient
 
@@ -64,9 +64,6 @@ class TestSDCoreBundle:
         )
         assert action_output["success"] == "true"
 
-    @pytest.mark.skip(
-        reason="Traefik issue: https://github.com/canonical/traefik-k8s-operator/issues/361"
-    )
     @pytest.mark.abort_on_fail
     async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
         self, configure_traefik_external_hostname
@@ -74,8 +71,14 @@ class TestSDCoreBundle:
         nms_url = self._get_nms_url()
         network_configuration_resp = requests.get(f"{nms_url}/network-configuration", verify=False)
         network_configuration_resp.raise_for_status()
+        device_groups_resp = requests.get(f"{nms_url}/device-groups", verify=False)
+        device_groups_resp.raise_for_status()
         subscribers_resp = requests.get(f"{nms_url}/subscribers", verify=False)
         subscribers_resp.raise_for_status()
+        inventory_resp = requests.get(f"{nms_url}/inventory", verify=False)
+        inventory_resp.raise_for_status()
+        users_resp = requests.get(f"{nms_url}/users", verify=False)
+        users_resp.raise_for_status()
 
     @pytest.mark.abort_on_fail
     async def test_given_cos_lite_integrated_with_sdcore_when_searching_for_5g_network_overview_dashboard_in_grafana_then_dashboard_exists(  # noqa: E501
@@ -190,9 +193,9 @@ def configure_sdcore(username: str, password: str) -> None:
 @pytest.mark.abort_on_fail
 def configure_traefik_external_hostname() -> None:
     """Configure external hostname for Traefik charm using its external IP and nip.io."""
-    traefik_public_address = juju_helper.get_application_address(
-        model_name=SDCORE_MODEL_NAME,
-        application_name="traefik",
+    traefik_public_address = k8s_helper.get_loadbalancer_service_external_ip(
+        service_name="traefik-lb",
+        namespace=SDCORE_MODEL_NAME,
     )
     juju_helper.set_application_config(
         model_name=SDCORE_MODEL_NAME,
