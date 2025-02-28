@@ -26,7 +26,7 @@ def get_loadbalancer_service_external_ip(service_name, namespace) -> Optional[st
     if not (status := getattr(service, "status", None)):
         raise KubernetesError("Unable to get status of service %s", service_name)
     if not (load_balancer_status := getattr(status, "loadBalancer", None)):
-        raise KubernetesError("Unable to get LoadBalances status of service %s", service_name)
+        raise KubernetesError("Unable to get LoadBalancer status for service %s", service_name)
     if not (ingress_addresses := getattr(load_balancer_status, "ingress", None)):
         raise KubernetesError("Unable to get Ingress for service %s", service_name)
     if not (ingress_address := ingress_addresses[0]):
