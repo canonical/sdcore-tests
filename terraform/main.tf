@@ -17,6 +17,16 @@ module "sdcore" {
 
   model = juju_model.sdcore.name
 
+  amf_config = {
+    log-level = "debug"
+  }
+  nrf_config = {
+    log-level = "debug"
+  }
+  upf_config = {
+    log-level = "debug"
+  }
+
   depends_on = [module.sdcore-router]
 }
 
