@@ -10,8 +10,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: TELCO-1532-deploy-infra-with-tf
 
       - name: Setup LXD
         run: lxd init --auto
@@ -21,6 +19,9 @@ jobs:
 
       - name: Deploy infra
         run: |
+          git clone https://github.com/canonical/charmed-aether-sd-core.git
+          cd charmed-aether-sd-core
+          git checkout TELCO-1532-deploy-infra-with-tf
           cd terraform
           terraform init
           terraform apply -auto-approve
