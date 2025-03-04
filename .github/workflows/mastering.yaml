@@ -1,0 +1,29 @@
+name: Mastering test
+
+on:
+  workflow_call:
+  push:
+
+jobs:
+  integration-test:
+    runs-on: [self-hosted, linux, X64, xlarge, jammy]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: "TELCO-1532-deploy-infra-with-tf"
+
+      - name: Setup LXD
+        run: lxd init --auto
+
+      - name: Install Terraform
+        run: sudo snap install terraform --classic
+
+      - name: Deploy infra
+        run: |
+          cd terraform
+          terraform init
+          terraform apply -auto-approve
+
+
+
