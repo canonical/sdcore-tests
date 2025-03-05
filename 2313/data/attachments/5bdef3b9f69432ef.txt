@@ -1,0 +1,1 @@
+[32mINFO    [0m httpx:_client.py:1025 HTTP Request: GET https://10.134.233.251:16443/api/v1/namespaces/sdcore/services/traefik-lb "HTTP/1.1 404 Not Found"
