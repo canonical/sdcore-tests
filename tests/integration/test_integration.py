@@ -54,7 +54,7 @@ class TestSDCoreBundle:
         if not username or not password:
             raise Exception("NMS credentials not found.")
         configure_sdcore(username, password)
-        juju_helper.juju_wait_for_active_idle(model_name=RAN_MODEL_NAME, timeout=300)
+        juju_helper.juju_wait_for_active_idle(model_name=RAN_MODEL_NAME, timeout=300, time_idle=30)
         action_output = juju_helper.juju_run_action(
             model_name=RAN_MODEL_NAME,
             application_name="gnbsim",

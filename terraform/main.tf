@@ -29,6 +29,9 @@ module "sdcore" {
   nrf_config = {
     log-level = "debug"
   }
+  nrf_resources = {
+    nrf-image = "gmerold/sdcore-nrf:1.6.1"
+  }
   nssf_config = {
     log-level = "debug"
   }
