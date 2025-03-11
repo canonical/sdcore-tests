@@ -100,6 +100,7 @@ class TestSDCoreBundle:
                 logger.warning(resp.text)
                 logger.warning("======================================================================")
                 resp.raise_for_status()
+                return
             except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
                 logger.warning("Connection error. Retrying...")
                 retries += 1
