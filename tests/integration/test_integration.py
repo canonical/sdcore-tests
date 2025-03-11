@@ -95,6 +95,10 @@ class TestSDCoreBundle:
                 resp = requests.get(
                     url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
                 )
+                logger.warning("======================================================================")
+                logger.warning(resp.status_code)
+                logger.warning(resp.text)
+                logger.warning("======================================================================")
                 resp.raise_for_status()
             except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
                 logger.warning("Connection error. Retrying...")
@@ -157,6 +161,7 @@ class TestSDCoreBundle:
             unit_number=0,
             action_name="get-admin-password",
         )
+        logger.warning(f"Grafana output: {action_output}")
         return action_output["url"], action_output["admin-password"]
 
 
