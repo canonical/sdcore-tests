@@ -96,7 +96,7 @@ class TestSDCoreBundle:
                     url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
                 )
                 resp.raise_for_status()
-            except requests.exceptions.ConnectionError:
+            except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
                 logger.warning("Connection error. Retrying...")
                 retries += 1
         assert False
