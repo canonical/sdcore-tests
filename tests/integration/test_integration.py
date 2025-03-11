@@ -28,6 +28,7 @@ TEST_DEVICE_GROUP_NAME = "default-default"
 TEST_IMSI = "001010100007487"
 TEST_NETWORK_SLICE_NAME = "default"
 NMS_CREDENTIALS_LABEL = "NMS_LOGIN"
+MAX_RETRIES = 5
 
 
 class TestSDCoreBundle:
@@ -88,10 +89,17 @@ class TestSDCoreBundle:
         grafana_url, grafana_passwd = await self._get_grafana_url_and_admin_password()
         network_overview_dashboard_query = "%20".join(dashboard_name.split())
         request_url = f"{grafana_url}/api/search?query={network_overview_dashboard_query}"
-        resp = requests.get(
-            url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
-        )
-        resp.raise_for_status()
+        retries = 0
+        while retries < MAX_RETRIES:
+            try:
+                resp = requests.get(
+                    url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
+                )
+                resp.raise_for_status()
+            except requests.exceptions.ConnectionError:
+                logger.warning("Connection error. Retrying...")
+                retries += 1
+        assert False
 
     def _deploy_sdcore(self):
         """Deploy the SD-Core Terraform module for testing.
