@@ -67,7 +67,7 @@ class TestSDCoreBundle:
                 assert action_output["success"] == "true"
                 return
             except (AssertionError, KeyError) as e:
-                logger.warning("Error when running simulation: %s. Retrying...", str(e))
+                logger.warning("Error when running simulation: %s. Retrying...", e)
         assert False
 
     @pytest.mark.abort_on_fail
