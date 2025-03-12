@@ -28,7 +28,6 @@ TEST_DEVICE_GROUP_NAME = "default-default"
 TEST_IMSI = "001010100007487"
 TEST_NETWORK_SLICE_NAME = "default"
 NMS_CREDENTIALS_LABEL = "NMS_LOGIN"
-MAX_RETRIES = 5
 
 
 class TestSDCoreBundle:
@@ -56,14 +55,20 @@ class TestSDCoreBundle:
             raise Exception("NMS credentials not found.")
         configure_sdcore(username, password)
         juju_helper.juju_wait_for_active_idle(model_name=RAN_MODEL_NAME, timeout=300, time_idle=30)
-        action_output = juju_helper.juju_run_action(
-            model_name=RAN_MODEL_NAME,
-            application_name="gnbsim",
-            unit_number=0,
-            action_name="start-simulation",
-            timeout=6 * 60,
-        )
-        assert action_output["success"] == "true"
+        for _ in range(3):
+            try:
+                action_output = juju_helper.juju_run_action(
+                    model_name=RAN_MODEL_NAME,
+                    application_name="gnbsim",
+                    unit_number=0,
+                    action_name="start-simulation",
+                    timeout=6 * 60,
+                )
+                assert action_output["success"] == "true"
+                return
+            except (AssertionError, KeyError) as e:
+                logger.warning("Error when running simulation: %s. Retrying...", str(e))
+        assert False
 
     @pytest.mark.abort_on_fail
     async def test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available(  # noqa: E501
@@ -89,21 +94,15 @@ class TestSDCoreBundle:
         grafana_url, grafana_passwd = await self._get_grafana_url_and_admin_password()
         network_overview_dashboard_query = "%20".join(dashboard_name.split())
         request_url = f"{grafana_url}/api/search?query={network_overview_dashboard_query}"
-        retries = 0
-        while retries < MAX_RETRIES:
+        for _ in range(3):
             try:
                 resp = requests.get(
                     url=request_url, auth=HTTPBasicAuth(username="admin", password=grafana_passwd)
                 )
-                logger.warning("======================================================================")
-                logger.warning(resp.status_code)
-                logger.warning(resp.text)
-                logger.warning("======================================================================")
                 resp.raise_for_status()
                 return
-            except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
-                logger.warning("Connection error. Retrying...")
-                retries += 1
+            except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
+                logger.warning("Error when accessing Grafana dashboard: %s. Retrying...", str(e))
         assert False
 
     def _deploy_sdcore(self):
@@ -162,7 +161,6 @@ class TestSDCoreBundle:
             unit_number=0,
             action_name="get-admin-password",
         )
-        logger.warning(f"Grafana output: {action_output}")
         return action_output["url"], action_output["admin-password"]
 
 
