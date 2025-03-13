@@ -88,7 +88,7 @@ jobs:
           done
           for pod in $(sudo microk8s.kubectl -n kube-system get pods -o json | jq .items[].metadata.name | tr -d '"'); do
             sudo  microk8s.kubectl -n kube-system logs $pod --all-containers > kube-system-$pod.log
-            sudo  microk8s.kubectl -n kube-system describe $pod --all-containers > kube-system-$pod.describe
+            sudo  microk8s.kubectl -n kube-system describe $pod > kube-system-$pod.describe
           done
 
       - name: Archive juju crashdump
