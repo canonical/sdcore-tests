@@ -33,6 +33,8 @@ NMS_CREDENTIALS_LABEL = "NMS_LOGIN"
 class TestSDCoreBundle:
     @classmethod
     def setup_class(cls):
+        juju_helper.create_model(SDCORE_MODEL_NAME)
+        juju_helper.create_model(RAN_MODEL_NAME)
         juju_helper.set_model_config(
             model_name=SDCORE_MODEL_NAME,
             config={"update-status-hook-interval": "1m"},

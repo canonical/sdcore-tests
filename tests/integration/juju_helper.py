@@ -12,6 +12,19 @@ from typing import Optional, Tuple
 logger = logging.getLogger(__name__)
 
 
+def create_model(model_name: str):
+    """Create Juju models.
+
+    Args:
+        model_name(str): Juju model name
+    """
+    create_model_cmd = ["juju", "add-model", model_name]
+    try:
+        check_output(create_model_cmd)
+    except CalledProcessError as e:
+        raise JujuError(f"Failed to create Juju model: {model_name}") from e
+
+
 def juju_wait_for_active_idle(model_name: str, timeout: int, time_idle: int = 10):
     """Wait for all application in a given model to be become Active-Idle.
 

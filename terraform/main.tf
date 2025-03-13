@@ -1,21 +1,21 @@
 # Copyright 2024 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-resource "juju_model" "sdcore" {
+data "juju_model" "sdcore" {
   name = var.sdcore_model_name
 }
 
 module "sdcore-router" {
   source = "git::https://github.com/canonical/sdcore-router-k8s-operator//terraform"
 
-  model      = juju_model.sdcore.name
-  depends_on = [juju_model.sdcore]
+  model      = data.juju_model.sdcore.name
+  depends_on = [data.juju_model.sdcore]
 }
 
 module "sdcore" {
   source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-k8s"
 
-  model = juju_model.sdcore.name
+  model = data.juju_model.sdcore.name
 
   amf_config = {
     log-level = "debug"
@@ -54,20 +54,20 @@ module "sdcore" {
   depends_on = [module.sdcore-router]
 }
 
-resource "juju_model" "ran-simulator" {
+data "juju_model" "ran-simulator" {
   name = var.ran_model_name
 }
 
 module "gnbsim" {
   source = "git::https://github.com/canonical/sdcore-gnbsim-k8s-operator//terraform"
 
-  model      = juju_model.ran-simulator.name
+  model      = data.juju_model.ran-simulator.name
 
   depends_on = [module.sdcore-router]
 }
 
 resource "juju_integration" "gnbsim-amf" {
-  model = juju_model.ran-simulator.name
+  model = data.juju_model.ran-simulator.name
 
   application {
     name     = module.gnbsim.app_name
@@ -80,7 +80,7 @@ resource "juju_integration" "gnbsim-amf" {
 }
 
 resource "juju_integration" "gnbsim-nms" {
-  model = juju_model.ran-simulator.name
+  model = data.juju_model.ran-simulator.name
 
   application {
     name     = module.gnbsim.app_name
@@ -104,7 +104,7 @@ module "cos" {
 }
 
 resource "juju_integration" "prometheus-remote-write" {
-  model = juju_model.sdcore.name
+  model = data.juju_model.sdcore.name
 
   application {
     name     = module.sdcore.grafana_agent_app_name
@@ -117,7 +117,7 @@ resource "juju_integration" "prometheus-remote-write" {
 }
 
 resource "juju_integration" "loki-logging" {
-  model = juju_model.sdcore.name
+  model = data.juju_model.sdcore.name
 
   application {
     name     = module.sdcore.grafana_agent_app_name
