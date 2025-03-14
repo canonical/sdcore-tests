@@ -86,6 +86,10 @@ jobs:
           for pod in $(sudo microk8s.kubectl -n ran get pods -o json | jq .items[].metadata.name | tr -d '"'); do
             sudo  microk8s.kubectl -n ran logs $pod --all-containers > ran-$pod.log
           done
+          for pod in $(sudo microk8s.kubectl -n kube-system get pods -o json | jq .items[].metadata.name | tr -d '"'); do
+            sudo  microk8s.kubectl -n kube-system logs $pod --all-containers > kube-system-$pod.log
+            sudo  microk8s.kubectl -n kube-system describe $pod > kube-system-$pod.describe
+          done
 
       - name: Archive juju crashdump
         if: failure()
@@ -102,3 +106,5 @@ jobs:
           path: |
             sdcore-*.log
             ran-*.log
+            kube-system-*.log
+            kube-system-*.describe
