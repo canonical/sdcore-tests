@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_model(model_name: str):
-    """Create Juju models.
+    """Create a Juju model.
 
     Args:
         model_name(str): Juju model name
