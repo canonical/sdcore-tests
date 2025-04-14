@@ -1,5 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","11838","test_given_external_hostname_configured_for_traefik_when_calling_sdcore_nms_then_configuration_tabs_are_available","tests.integration","Thu Mar 27 02:42:56 GMT 2025","passed","Thu Mar 27 02:43:08 GMT 2025","TestSDCoreBundle","test_integration","",""
-"","2861","test_given_cos_lite_integrated_with_sdcore_when_searching_for_5g_network_overview_dashboard_in_grafana_then_dashboard_exists","tests.integration","Thu Mar 27 02:43:08 GMT 2025","passed","Thu Mar 27 02:43:10 GMT 2025","TestSDCoreBundle","test_integration","",""
-"","121918","test_given_sdcore_bundle_and_gnbsim_deployed_when_start_simulation_then_simulation_success_status_is_true","tests.integration","Thu Mar 27 02:40:42 GMT 2025","passed","Thu Mar 27 02:42:44 GMT 2025","TestSDCoreBundle","test_integration","",""
-"","501538","test_given_sdcore_terraform_module_when_deploy_then_status_is_active","tests.integration","Thu Mar 27 02:32:21 GMT 2025","passed","Thu Mar 27 02:40:42 GMT 2025","TestSDCoreBundle","test_integration","",""

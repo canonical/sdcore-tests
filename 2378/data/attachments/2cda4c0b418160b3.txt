@@ -1,0 +1,47 @@
+[32mINFO    [0m httpx:_client.py:1025 HTTP Request: GET https://10.145.246.151:16443/api/v1/namespaces/sdcore/services/traefik-lb "HTTP/1.1 200 OK"
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:57 Deployment is ready!
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:58 Model   Controller                Cloud/Region        Version  SLA          Timestamp
+sdcore  github-pr-8ab33-microk8s  microk8s/localhost  3.6.4    unsupported  02:45:23Z
+
+SAAS        Status  Store  URL
+loki        active  local  admin/cos-lite.loki
+prometheus  active  local  admin/cos-lite.prometheus
+
+App                       Version  Status  Scale  Charm                     Channel        Rev  Address         Exposed  Message
+amf                       1.6.4    active      1  sdcore-amf-k8s            1.6/edge       914  10.152.183.43   no       
+ausf                      1.6.2    active      1  sdcore-ausf-k8s           1.6/edge       716  10.152.183.17   no       
+grafana-agent             0.40.4   active      1  grafana-agent-k8s         latest/stable  111  10.152.183.187  no       grafana-dashboards-provider: off, tracing: off
+mongodb                            active      1  mongodb-k8s               6/stable        61  10.152.183.52   no       
+nms                       1.8.5    active      1  sdcore-nms-k8s            1.6/edge       858  10.152.183.32   no       
+nrf                       1.6.2    active      1  sdcore-nrf-k8s            1.6/edge       798  10.152.183.168  no       
+nssf                      1.6.1    active      1  sdcore-nssf-k8s           1.6/edge       672  10.152.183.209  no       
+pcf                       1.6.1    active      1  sdcore-pcf-k8s            1.6/edge       715  10.152.183.156  no       
+router                             active      1  sdcore-router-k8s         1.6/edge       468  10.152.183.179  no       
+self-signed-certificates           active      1  self-signed-certificates  1/stable       263  10.152.183.104  no       
+smf                       2.0.2    active      1  sdcore-smf-k8s            1.6/edge       808  10.152.183.40   no       
+traefik                   2.11.0   active      1  traefik-k8s               latest/stable  234  10.152.183.131  no       Serving at 10.0.0.4.nip.io
+udm                       1.6.1    active      1  sdcore-udm-k8s            1.6/edge       668  10.152.183.135  no       
+udr                       1.6.2    active      1  sdcore-udr-k8s            1.6/edge       652  10.152.183.73   no       
+upf                       2.0.1    active      1  sdcore-upf-k8s            1.6/edge       771  10.152.183.84   no       
+
+Unit                         Workload  Agent      Address     Ports  Message
+amf/0*                       active    idle       10.1.53.17         
+ausf/0*                      active    idle       10.1.53.50         
+grafana-agent/0*             active    idle       10.1.53.20         grafana-dashboards-provider: off, tracing: off
+mongodb/0*                   active    idle       10.1.53.54         Primary
+nms/0*                       active    idle       10.1.53.19         
+nrf/0*                       active    idle       10.1.53.12         
+nssf/0*                      active    idle       10.1.53.22         
+pcf/0*                       active    idle       10.1.53.18         
+router/0*                    active    idle       10.1.53.21         
+self-signed-certificates/0*  active    idle       10.1.53.45         
+smf/0*                       active    idle       10.1.53.61         
+traefik/0*                   active    executing  10.1.53.26         Serving at 10.0.0.4.nip.io
+udm/0*                       active    idle       10.1.53.57         
+udr/0*                       active    idle       10.1.53.13         
+upf/0*                       active    idle       10.1.53.25         
+
+Offer  Application  Charm           Rev  Connected  Endpoint        Interface       Role
+amf    amf          sdcore-amf-k8s  914  1/1        fiveg-n2        fiveg_n2        provider
+nms    nms          sdcore-nms-k8s  858  1/1        fiveg_core_gnb  fiveg_core_gnb  provider
+upf    upf          sdcore-upf-k8s  771  0/0        fiveg_n3        fiveg_n3        provider
