@@ -36,16 +36,16 @@ jobs:
           mkdir -p ~/.kube
           sudo k8s config > ~/.kube/config
 
-      - name: Setup Juju
+      - name: Install Juju ecosystem
         run: |
           sudo snap install juju --classic --channel="3.6/stable"
+          sudo snap install juju-crashdump --classic --revision=271
           mkdir -p ~/.local/share/juju/
           sudo k8s config > ~/.local/share/juju/credentials.yaml
           juju bootstrap k8s
 
       - name: Install UV and Tox
         run: |
-          pipx uninstall tox
           sudo snap install astral-uv --classic
           uv tool install tox --with tox-uv --force
 
@@ -125,6 +125,6 @@ jobs:
       - name: Clean environment
         if: always()
         run: |
-          juju destroy-model sdcore --force --destroy-storage --no-prompt
-          juju destroy-model ran --force --destroy-storage --no-prompt
+          juju destroy-model sdcore --force --destroy-storage --no-prompt | true
+          juju destroy-model ran --force --destroy-storage --no-prompt | true
           juju destroy-controller k8s --no-prompt --destroy-all-models --destroy-storage
