@@ -23,7 +23,7 @@ jobs:
 
       - name: Install Canonical K8S
         run: |
-          sudo snap install k8s --classic --channel=1.32-classic/stable
+          sudo snap install k8s --classic --channel=1.33-classic/stable
           cat << EOF | sudo k8s bootstrap --file -
           containerd-base-dir: /opt/containerd
           cluster-config:
