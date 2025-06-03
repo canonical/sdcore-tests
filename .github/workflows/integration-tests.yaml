@@ -21,13 +21,29 @@ jobs:
       - name: Install Terraform
         run: sudo snap install terraform --classic
 
+      - name: Install Canonical K8S
+        id: canonical-k8s
+        run: |
+          sudo snap install k8s --classic --channel=1.32-classic/stable
+          cat << EOF | sudo k8s bootstrap --file -
+          containerd-base-dir: /opt/containerd
+          cluster-config:
+            annotations:
+              k8sd/v1alpha1/cilium/sctp/enabled: true
+          EOF
+          sudo k8s enable network dns load-balancer local-storage
+          sudo k8s set load-balancer.cidrs="10.0.0.2-10.0.0.10"
+          sudo k8s status --wait-ready --timeout 5m
+          mkdir -p ~/.kube
+          sudo k8s config > ~/.kube/config
+          echo "kubeconfig=$(sudo k8s config | base64 -w 0)" >> $GITHUB_OUTPUT
+
       - name: Setup operator environment
         uses: charmed-kubernetes/actions-operator@main
         with:
+          credentials-yaml: ${{ steps.canonical-k8s.outputs.kubeconfig }}
           juju-channel: 3.6/stable
-          provider: microk8s
-          channel: 1.31-strict/stable
-          microk8s-addons: "hostpath-storage dns metallb:10.0.0.2-10.0.0.10"
+          provider: k8s
 
       - name: Install UV and Tox
         run: |
@@ -38,10 +54,9 @@ jobs:
       - name: Enable Multus addon
         continue-on-error: true
         run: |
-          sudo microk8s addons repo add community https://github.com/canonical/microk8s-community-addons --reference feat/strict-fix-multus
-          sudo microk8s enable multus
-          sudo microk8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
-          sudo microk8s kubectl auth can-i create network-attachment-definitions
+          sudo k8s kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/master/deployments/multus-daemonset-thick.yml
+          sudo k8s kubectl -n kube-system rollout status daemonset/kube-multus-ds
+          sudo k8s kubectl auth can-i create network-attachment-definitions
 
       - name: Run integration tests with Allure
         if: ${{ github.ref_name == 'main' }}
@@ -80,15 +95,15 @@ jobs:
         run: |
           juju-crashdump -m sdcore
           juju-crashdump -m ran
-          for pod in $(sudo microk8s.kubectl -n sdcore get pods -o json | jq .items[].metadata.name | tr -d '"'); do
-            sudo  microk8s.kubectl -n sdcore logs $pod --all-containers > sdcore-$pod.log
+          for pod in $(sudo k8s kubectl -n sdcore get pods -o json | jq .items[].metadata.name | tr -d '"'); do
+            sudo k8s kubectl -n sdcore logs $pod --all-containers > sdcore-$pod.log
           done
-          for pod in $(sudo microk8s.kubectl -n ran get pods -o json | jq .items[].metadata.name | tr -d '"'); do
-            sudo  microk8s.kubectl -n ran logs $pod --all-containers > ran-$pod.log
+          for pod in $(sudo k8s kubectl -n ran get pods -o json | jq .items[].metadata.name | tr -d '"'); do
+            sudo k8s kubectl -n ran logs $pod --all-containers > ran-$pod.log
           done
-          for pod in $(sudo microk8s.kubectl -n kube-system get pods -o json | jq .items[].metadata.name | tr -d '"'); do
-            sudo  microk8s.kubectl -n kube-system logs $pod --all-containers > kube-system-$pod.log
-            sudo  microk8s.kubectl -n kube-system describe $pod > kube-system-$pod.describe
+          for pod in $(sudo k8s kubectl -n kube-system get pods -o json | jq .items[].metadata.name | tr -d '"'); do
+            sudo k8s kubectl -n kube-system logs $pod --all-containers > kube-system-$pod.log
+            sudo k8s kubectl -n kube-system describe $pod > kube-system-$pod.describe
           done
 
       - name: Archive juju crashdump
