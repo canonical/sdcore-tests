@@ -22,6 +22,7 @@ jobs:
         run: sudo snap install terraform --classic
 
       - name: Install Canonical K8S
+        id: canonical-k8s
         run: |
           sudo snap install k8s --classic --channel=1.33-classic/stable
           cat << EOF | sudo k8s bootstrap --file -
@@ -35,13 +36,14 @@ jobs:
           sudo k8s status --wait-ready --timeout 5m
           mkdir -p ~/.kube
           sudo k8s config > ~/.kube/config
+          echo "kubeconfig=$(sudo k8s config | base64 -w 0)" >> $GITHUB_OUTPUT
 
-      - name: Setup Juju
-        run: |
-          sudo snap install juju --classic --channel="3.6/stable"
-          mkdir -p ~/.local/share/juju/
-          sudo k8s config > ~/.local/share/juju/credentials.yaml
-          juju bootstrap k8s
+      - name: Setup operator environment
+        uses: charmed-kubernetes/actions-operator@main
+        with:
+          credentials-yaml: ${{ steps.canonical-k8s.outputs.kubeconfig }}
+          juju-channel: 3.6/stable
+          provider: k8s
 
       - name: Install UV and Tox
         run: |
@@ -128,4 +130,3 @@ jobs:
           juju destroy-model sdcore --force --destroy-storage --no-prompt | true
           juju destroy-model ran --force --destroy-storage --no-prompt | true
           juju destroy-model cos-lite --force --destroy-storage --no-prompt | true
-          juju destroy-controller k8s --no-prompt --destroy-all-models --destroy-storage
