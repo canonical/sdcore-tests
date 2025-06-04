@@ -129,4 +129,5 @@ jobs:
         run: |
           juju destroy-model sdcore --force --destroy-storage --no-prompt | true
           juju destroy-model ran --force --destroy-storage --no-prompt | true
+          juju destroy-model cos-lite --force --destroy-storage --no-prompt | true
           juju destroy-controller k8s --no-prompt --destroy-all-models --destroy-storage
