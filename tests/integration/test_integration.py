@@ -57,7 +57,7 @@ class TestSDCoreBundle:
             raise Exception("NMS credentials not found.")
         configure_sdcore(username, password)
         juju_helper.juju_wait_for_active_idle(model_name=RAN_MODEL_NAME, timeout=300, time_idle=30)
-        for _ in range(1):
+        for _ in range(3):
             try:
                 action_output = juju_helper.juju_run_action(
                     model_name=RAN_MODEL_NAME,
