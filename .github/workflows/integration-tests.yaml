@@ -42,6 +42,8 @@ jobs:
           sudo snap install juju-crashdump --classic --revision=271
           mkdir -p ~/.local/share/juju/
           sudo k8s config > ~/.local/share/juju/credentials.yaml
+          sudo iptables -F FORWARD
+          sudo iptables -P FORWARD ACCEPT
           juju bootstrap k8s
 
       - name: Install UV and Tox
