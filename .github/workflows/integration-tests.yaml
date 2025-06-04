@@ -28,11 +28,19 @@ jobs:
           cat << EOF | sudo k8s bootstrap --file -
           containerd-base-dir: /opt/containerd
           cluster-config:
+            network:
+              enabled: true
+            dns:
+              enabled: true
+            load-balancer:
+              enabled: true
+              cidrs:
+              - 10.0.0.2-10.0.0.10
+            local-storage:
+              enabled: true
             annotations:
               k8sd/v1alpha1/cilium/sctp/enabled: true
           EOF
-          sudo k8s enable network dns load-balancer local-storage
-          sudo k8s set load-balancer.cidrs="10.0.0.2-10.0.0.10"
           sudo k8s status --wait-ready --timeout 5m
           mkdir -p ~/.kube
           sudo k8s config > ~/.kube/config
