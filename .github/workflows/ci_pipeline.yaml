@@ -12,13 +12,13 @@ on:
 
 jobs:
   codeql:
-    uses: canonical/sdcore-github-workflows/.github/workflows/codeql-analysis.yml@v2.3.3
+    uses: canonical/sdcore-github-workflows/.github/workflows/codeql-analysis.yml@v2.3.5
 
   lint-report:
-    uses: canonical/sdcore-github-workflows/.github/workflows/lint-report.yaml@v2.3.3
+    uses: canonical/sdcore-github-workflows/.github/workflows/lint-report.yaml@v2.3.5
 
   static-analysis:
-    uses: canonical/sdcore-github-workflows/.github/workflows/static-analysis.yaml@v2.3.3
+    uses: canonical/sdcore-github-workflows/.github/workflows/static-analysis.yaml@v2.3.5
 
   integration-test:
     uses: ./.github/workflows/integration-tests.yaml
@@ -53,5 +53,5 @@ jobs:
   sync-issues:
     if: always()
     needs: [ create-issue ]
-    uses: canonical/sdcore-github-workflows/.github/workflows/issues.yaml@v2.3.3
+    uses: canonical/sdcore-github-workflows/.github/workflows/issues.yaml@v2.3.5
     secrets: inherit
