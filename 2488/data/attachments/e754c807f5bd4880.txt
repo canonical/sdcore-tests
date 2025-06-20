@@ -1,0 +1,138 @@
+[32mINFO    [0m tests.integration.terraform_helper:terraform_helper.py:50 Running `terraform init` in /home/ubuntu/actions-runner/_work/sdcore-tests/sdcore-tests/terraform
+[32mINFO    [0m tests.integration.terraform_helper:terraform_helper.py:99 Running: terraform init
+[32mINFO    [0m tests.integration.terraform_helper:terraform_helper.py:69 Running `terraform apply` in /home/ubuntu/actions-runner/_work/sdcore-tests/sdcore-tests/terraform
+[32mINFO    [0m tests.integration.terraform_helper:terraform_helper.py:99 Running: terraform apply -auto-approve
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nssf/0. Current status is: ('blocked', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for pcf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for self-signed-certificates/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for smf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udr/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for upf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nssf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for pcf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for self-signed-certificates/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for smf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udr/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for upf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nssf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for pcf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for self-signed-certificates/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for smf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udr/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for upf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for upf/0. Current status is: ('waiting', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for upf/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for upf/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for grafana-agent/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('active', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:57 Deployment is ready!
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:58 Model   Controller           Cloud/Region  Version  SLA          Timestamp
+sdcore  github-pr-9f209-k8s  k8s           3.6.7    unsupported  02:43:02Z
+
+SAAS        Status  Store  URL
+loki        active  local  admin/cos-lite.loki
+prometheus  active  local  admin/cos-lite.prometheus
+
+App                       Version  Status   Scale  Charm                     Channel        Rev  Address         Exposed  Message
+amf                       1.6.4    active       1  sdcore-amf-k8s            1.6/edge       934  10.152.183.215  no       
+ausf                      1.6.2    active       1  sdcore-ausf-k8s           1.6/edge       739  10.152.183.134  no       
+grafana-agent             0.40.4   active       1  grafana-agent-k8s         latest/stable  113  10.152.183.54   no       grafana-dashboards-provider: off, tracing: off
+mongodb                            active       1  mongodb-k8s               6/stable        61  10.152.183.159  no       
+nms                       1.8.5    active       1  sdcore-nms-k8s            1.6/edge       885  10.152.183.247  no       
+nrf                       1.6.2    active       1  sdcore-nrf-k8s            1.6/edge       822  10.152.183.204  no       
+nssf                      1.6.1    active       1  sdcore-nssf-k8s           1.6/edge       684  10.152.183.217  no       
+pcf                       1.6.1    active       1  sdcore-pcf-k8s            1.6/edge       728  10.152.183.43   no       
+router                             active       1  sdcore-router-k8s         1.6/edge       480  10.152.183.111  no       
+self-signed-certificates           active       1  self-signed-certificates  1/stable       317  10.152.183.196  no       
+smf                       2.0.2    active       1  sdcore-smf-k8s            1.6/edge       827  10.152.183.85   no       
+traefik                   2.11.0   blocked      1  traefik-k8s               latest/stable  236  10.152.183.32   no       "external_hostname" must be set while using routing mode "subdomain"
+udm                       1.6.1    active       1  sdcore-udm-k8s            1.6/edge       689  10.152.183.135  no       
+udr                       1.6.2    active       1  sdcore-udr-k8s            1.6/edge       668  10.152.183.203  no       
+upf                       2.0.1    active       1  sdcore-upf-k8s            1.6/edge       794  10.152.183.94   no       
+
+Unit                         Workload  Agent  Address     Ports  Message
+amf/0*                       active    idle   10.1.0.20          
+ausf/0*                      active    idle   10.1.0.85          
+grafana-agent/0*             active    idle   10.1.0.179         grafana-dashboards-provider: off, tracing: off
+mongodb/0*                   active    idle   10.1.0.90          Primary
+nms/0*                       active    idle   10.1.0.180         
+nrf/0*                       active    idle   10.1.0.22          
+nssf/0*                      active    idle   10.1.0.178         
+pcf/0*                       active    idle   10.1.0.176         
+router/0*                    active    idle   10.1.0.5           
+self-signed-certificates/0*  active    idle   10.1.0.78          
+smf/0*                       active    idle   10.1.0.234         
+traefik/0*                   blocked   idle   10.1.0.35          "external_hostname" must be set while using routing mode "subdomain"
+udm/0*                       active    idle   10.1.0.3           
+udr/0*                       active    idle   10.1.0.220         
+upf/0*                       active    idle   10.1.0.157         
+
+Offer  Application  Charm           Rev  Connected  Endpoint        Interface       Role
+amf    amf          sdcore-amf-k8s  934  1/1        fiveg-n2        fiveg_n2        provider
+nms    nms          sdcore-nms-k8s  885  1/1        fiveg_core_gnb  fiveg_core_gnb  provider
+upf    upf          sdcore-upf-k8s  794  0/0        fiveg_n3        fiveg_n3        provider
