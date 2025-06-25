@@ -67,8 +67,8 @@ resource "juju_integration" "gnbsim-amf" {
   model = data.juju_model.ran-simulator.name
 
   application {
-    name      = module.gnbsim.app_name
-    endpoints = [module.gnbsim.requires.fiveg_n2]
+    name     = module.gnbsim.app_name
+    endpoint = module.gnbsim.requires.fiveg_n2
   }
 
   application {
@@ -80,8 +80,8 @@ resource "juju_integration" "gnbsim-nms" {
   model = data.juju_model.ran-simulator.name
 
   application {
-    name      = module.gnbsim.app_name
-    endpoints = [module.gnbsim.requires.fiveg_core_gnb]
+    name     = module.gnbsim.app_name
+    endpoint = module.gnbsim.requires.fiveg_core_gnb
   }
 
   application {
@@ -104,8 +104,8 @@ resource "juju_integration" "prometheus-remote-write" {
   model = data.juju_model.sdcore.name
 
   application {
-    name      = module.sdcore.grafana_agent_app_name
-    endpoints = [module.sdcore.send_remote_write_endpoint]
+    name     = module.sdcore.grafana_agent_app_name
+    endpoint = module.sdcore.send_remote_write_endpoint
   }
 
   application {
@@ -117,8 +117,8 @@ resource "juju_integration" "loki-logging" {
   model = data.juju_model.sdcore.name
 
   application {
-    name      = module.sdcore.grafana_agent_app_name
-    endpoints = [module.sdcore.logging_consumer_endpoint]
+    name     = module.sdcore.grafana_agent_app_name
+    endpoint = module.sdcore.logging_consumer_endpoint
   }
 
   application {
