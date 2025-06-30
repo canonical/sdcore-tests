@@ -3,14 +3,14 @@
 [32mINFO    [0m tests.integration.nms_helper:nms_helper.py:200 Created network slice default.
 [32mINFO    [0m tests.integration.juju_helper:juju_helper.py:57 Deployment is ready!
 [32mINFO    [0m tests.integration.juju_helper:juju_helper.py:58 Model  Controller           Cloud/Region  Version  SLA          Timestamp
-ran    github-pr-9f209-k8s  k8s           3.6.7    unsupported  02:43:28Z
+ran    github-pr-1cc98-k8s  k8s           3.6.7    unsupported  13:05:59Z
 
 SAAS  Status  Store  URL
 amf   active  local  admin/sdcore.amf
 nms   active  local  admin/sdcore.nms
 
 App     Version  Status  Scale  Charm              Channel   Rev  Address         Exposed  Message
-gnbsim  1.6.1    active      1  sdcore-gnbsim-k8s  1.6/edge  693  10.152.183.246  no       
+gnbsim  1.6.1    active      1  sdcore-gnbsim-k8s  1.6/edge  697  10.152.183.195  no       
 
-Unit       Workload  Agent  Address     Ports  Message
-gnbsim/0*  active    idle   10.1.0.193
+Unit       Workload  Agent  Address    Ports  Message
+gnbsim/0*  active    idle   10.1.0.69
