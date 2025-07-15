@@ -1,0 +1,16 @@
+[32mINFO    [0m tests.integration.nms_helper:nms_helper.py:186 Created subscriber with IMSI 001010100007487.
+[32mINFO    [0m tests.integration.nms_helper:nms_helper.py:193 Created device group default-default.
+[32mINFO    [0m tests.integration.nms_helper:nms_helper.py:200 Created network slice default.
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:57 Deployment is ready!
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:58 Model  Controller           Cloud/Region  Version  SLA          Timestamp
+ran    github-pr-a4c0d-k8s  k8s           3.6.8    unsupported  02:49:28Z
+
+SAAS  Status  Store  URL
+amf   active  local  admin/sdcore.amf
+nms   active  local  admin/sdcore.nms
+
+App     Version  Status  Scale  Charm              Channel   Rev  Address         Exposed  Message
+gnbsim  1.6.1    active      1  sdcore-gnbsim-k8s  1.6/edge  699  10.152.183.206  no       
+
+Unit       Workload  Agent  Address     Ports  Message
+gnbsim/0*  active    idle   10.1.0.253
