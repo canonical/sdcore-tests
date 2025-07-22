@@ -46,6 +46,18 @@ jobs:
           sudo k8s config > ~/.kube/config
           echo "kubeconfig=$(sudo k8s config | base64 -w 0)" >> $GITHUB_OUTPUT
 
+      - name: "Limit Dockerhub pulls"
+        run: |
+          if [ -n "$DOCKERHUB_MIRROR" ]; then
+            MIRROR_CONFIG=/opt/containerd/k8s-containerd/etc/containerd/hosts.d/docker.io
+            sudo mkdir -p ${MIRROR_CONFIG}
+            sudo chown $USER ${MIRROR_CONFIG}
+            cat << EOF | sudo tee ${MIRROR_CONFIG}/hosts.toml
+          [host."$DOCKERHUB_MIRROR"]
+          capabilities = ["pull", "resolve"]
+          EOF
+          fi
+
       - name: Setup operator environment
         uses: charmed-kubernetes/actions-operator@main
         with:
