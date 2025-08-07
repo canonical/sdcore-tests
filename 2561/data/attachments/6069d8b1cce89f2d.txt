@@ -1,0 +1,2 @@
+[32mINFO    [0m tests.integration.terraform_helper:terraform_helper.py:50 Running `terraform init` in /home/ubuntu/actions-runner/_work/sdcore-tests/sdcore-tests/terraform
+[32mINFO    [0m tests.integration.terraform_helper:terraform_helper.py:99 Running: terraform init
