@@ -1,0 +1,120 @@
+[32mINFO    [0m httpx:_client.py:1025 HTTP Request: GET https://10.151.33.227:6443/api/v1/namespaces/sdcore/services/traefik-lb "HTTP/1.1 200 OK"
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('maintenance', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nssf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for pcf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for router/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for smf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udr/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('maintenance', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nssf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for pcf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for router/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for smf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udr/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('maintenance', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nssf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for pcf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for router/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for smf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udr/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('maintenance', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nssf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for pcf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for router/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for smf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udr/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('maintenance', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nssf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for pcf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for router/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for smf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udr/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for amf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for ausf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for mongodb/0. Current status is: ('maintenance', 'executing')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nms/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nrf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for nssf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for pcf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for router/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for smf/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udm/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:52 Waiting for udr/0. Current status is: ('waiting', 'idle')
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:53 Sleeping for 10 seconds...
+[32mINFO    [0m tests.integration.juju_helper:juju_helper.py:60 Model   Controller           Cloud/Region  Version  SLA          Timestamp
+sdcore  github-pr-1b809-k8s  k8s           3.6.8    unsupported  03:00:21Z
+
+SAAS        Status  Store  URL
+loki        active  local  admin/cos-lite.loki
+prometheus  active  local  admin/cos-lite.prometheus
+
+App                       Version  Status   Scale  Charm                     Channel        Rev  Address         Exposed  Message
+amf                       1.6.4    waiting      1  sdcore-amf-k8s            1.6/edge       947  10.152.183.160  no       Waiting for NRF data to be available
+ausf                      1.6.2    waiting      1  sdcore-ausf-k8s           1.6/edge       749  10.152.183.82   no       Waiting for NRF data to be available
+grafana-agent             0.40.4   active       1  grafana-agent-k8s         1/stable       121  10.152.183.169  no       grafana-dashboards-provider: off, tracing: off
+mongodb                   6.0.24   waiting      1  mongodb-k8s               6/stable        76  10.152.183.172  no       installing agent
+nms                                waiting      1  sdcore-nms-k8s            1.6/edge       903  10.152.183.67   no       Waiting for the common database to be available
+nrf                       1.6.2    waiting      1  sdcore-nrf-k8s            1.6/edge       833  10.152.183.152  no       Waiting for the database to be available
+nssf                      1.6.1    waiting      1  sdcore-nssf-k8s           1.6/edge       695  10.152.183.186  no       Waiting for NRF data to be available
+pcf                       1.6.1    waiting      1  sdcore-pcf-k8s            1.6/edge       738  10.152.183.119  no       Waiting for NRF endpoint to be available
+router                             waiting      1  sdcore-router-k8s         1.6/edge       482  10.152.183.51   no       Waiting for Multus to be ready
+self-signed-certificates           active       1  self-signed-certificates  1/stable       308  10.152.183.121  no       
+smf                       2.0.2    waiting      1  sdcore-smf-k8s            1.6/edge       838  10.152.183.201  no       Waiting for NRF relation to be available
+traefik                   2.11.0   active       1  traefik-k8s               latest/stable  236  10.152.183.38   no       Serving at 10.0.0.5.nip.io
+udm                       1.6.1    waiting      1  sdcore-udm-k8s            1.6/edge       698  10.152.183.163  no       Waiting for NRF endpoint to be available
+udr                                waiting      1  sdcore-udr-k8s            1.6/edge       682  10.152.183.155  no       Waiting for the common database to be available
+upf                       2.0.1    active       1  sdcore-upf-k8s            1.6/edge       809  10.152.183.231  no       
+
+Unit                         Workload     Agent      Address     Ports  Message
+amf/0*                       waiting      idle       10.1.0.224         Waiting for NRF data to be available
+ausf/0*                      waiting      idle       10.1.0.156         Waiting for NRF data to be available
+grafana-agent/0*             active       idle       10.1.0.247         grafana-dashboards-provider: off, tracing: off
+mongodb/0*                   maintenance  executing  10.1.0.177         Starting MongoDB.
+nms/0*                       waiting      idle       10.1.0.155         Waiting for the common database to be available
+nrf/0*                       waiting      idle       10.1.0.223         Waiting for the database to be available
+nssf/0*                      waiting      idle       10.1.0.11          Waiting for NRF data to be available
+pcf/0*                       waiting      idle       10.1.0.117         Waiting for NRF endpoint to be available
+router/0*                    waiting      idle       10.1.0.137         Waiting for Multus to be ready
+self-signed-certificates/0*  active       idle       10.1.0.60          
+smf/0*                       waiting      idle       10.1.0.141         Waiting for NRF relation to be available
+traefik/0*                   active       idle       10.1.0.18          Serving at 10.0.0.5.nip.io
+udm/0*                       waiting      idle       10.1.0.101         Waiting for NRF endpoint to be available
+udr/0*                       waiting      idle       10.1.0.88          Waiting for the common database to be available
+upf/0*                       active       idle       10.1.0.35          
+
+Offer         Application               Charm                     Rev  Connected  Endpoint        Interface             Role
+amf           amf                       sdcore-amf-k8s            947  1/1        fiveg-n2        fiveg_n2              provider
+certificates  self-signed-certificates  self-signed-certificates  308  0/0        certificates    tls-certificates      provider
+nms           nms                       sdcore-nms-k8s            903  1/1        fiveg_core_gnb  fiveg_core_gnb        provider
+send-ca-cert  self-signed-certificates  self-signed-certificates  308  0/0        send-ca-cert    certificate_transfer  provider
+upf           upf                       sdcore-upf-k8s            809  0/0        fiveg_n3        fiveg_n3              provider
